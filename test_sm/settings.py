@@ -97,8 +97,11 @@ WSGI_APPLICATION = 'test_sm.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-database_url = os.environ.get("DATABASE_URL")
-DATABASES["default"] = dj_database_url.parse("database_url")
+# database_url = os.environ.get("DATABASE_URL")
+# DATABASES["default"] = dj_database_url.parse("database_url")
+DATABASES = {
+    'default': dj_database_url.parse(os.environ["DATABASE_URL"])
+}
 
 # postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt
 # DATABASES = {
