@@ -155,6 +155,7 @@
             </div>
             <div>
                 <button type="button" class="btn btn-danger" id="nextBtn">Next</button>
+                <button type="submit" class="btn btn-success d-none" id="submitBtn">Submit</button>
             </div>
         </div>
     </form>
@@ -245,7 +246,7 @@
     const passwordInput = document.getElementById('id_password');
     const strengthMeter = document.getElementById('strengthMeter');
 
-    passwordInput.addEventListener('input', function () {
+    passwordInput.addEventListener('input', function () {  
         const value = passwordInput.value;
         let strength = 0;
         if (value.length > 5) strength++;

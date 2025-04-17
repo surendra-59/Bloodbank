@@ -5,10 +5,14 @@ from django.conf import settings
 # from django.conf.urls.static import static
 # from . import settings
 
+
 urlpatterns = [
-    path("", include('myapp.urls')),# Handles user home/dashboard 
-    # path('blog/', include('blog.urls')),  # Blog-specific routes
-    path('blog/', include('blog.urls', namespace='blog')),  # ✅ register namespace
-    # path("accounts/", include("django.contrib.auth.urls")),
+    path("", include('myapp.urls')),  # Handles user home/dashboard
+    path('blog/', include('blog.urls', namespace='blog')),  # Blog-specific routes with namespace
     path('admin/', admin.site.urls),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+# Serve static and media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
