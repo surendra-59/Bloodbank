@@ -86,5 +86,9 @@ urlpatterns = [
 
     # password reset
 
+    # urls.py
+    path('test-upload/', views.test_cloudinary_upload, name='test_upload'),
+
+
  ]
 

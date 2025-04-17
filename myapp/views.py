@@ -871,22 +871,22 @@ def admin_profile(request):
     }
     return render(request, 'admin/profile_summary.html', context)
 
-@login_required
-@user_passes_test(is_admin)
-def admin_profile_update(request):
-    user = request.user
-    if request.method == 'POST':
-        form = AdminProfileUpdateForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, '✅ Profile updated successfully.')
-            return redirect('admin_profile')
-        else:
-            messages.error(request, '❌ Please correct the errors below.')
-    else:
-        form = AdminProfileUpdateForm(instance=user)
+# @login_required
+# @user_passes_test(is_admin)
+# def admin_profile_update(request):
+#     user = request.user
+#     if request.method == 'POST':
+#         form = AdminProfileUpdateForm(request.POST, request.FILES, instance=user)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, '✅ Profile updated successfully.')
+#             return redirect('admin_profile')
+#         else:
+#             messages.error(request, '❌ Please correct the errors below.')
+#     else:
+#         form = AdminProfileUpdateForm(instance=user)
 
-    return render(request, 'admin/profile_update.html', {'form': form})
+#     return render(request, 'admin/profile_update.html', {'form': form})
 
 @login_required
 @user_passes_test(is_admin)
@@ -1535,6 +1535,36 @@ def ResetPassword(request, signed_token):
         messages.error(request, 'Invalid or expired reset link')
         return redirect('forget-password')
 
+
+
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_profile_update(request):
+    user = request.user
+    if request.method == 'POST':
+        form = AdminProfileUpdateForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, '✅ Profile updated successfully.')
+                logger.info(f"[Profile Update] Admin ID {user.id} updated successfully.")
+                return redirect('admin_profile')
+            except Exception as e:
+                logger.error(f"[Profile Update Error] Admin ID {user.id} failed to save: {e}", exc_info=True)
+                messages.error(request, '❌ Something went wrong while saving your profile. Check logs for details.')
+        else:
+            logger.warning(f"[Profile Update Validation Failed] Admin ID {user.id} - Errors: {form.errors.as_json()}")
+            messages.error(request, '❌ Please correct the errors below.')
+    else:
+        form = AdminProfileUpdateForm(instance=user)
+
+    return render(request, 'admin/profile_update.html', {'form': form})
 
 
 
