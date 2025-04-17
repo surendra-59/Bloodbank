@@ -99,8 +99,12 @@ WSGI_APPLICATION = 'test_sm.wsgi.application'
 # }
 # database_url = os.environ.get("DATABASE_URL")
 # DATABASES["default"] = dj_database_url.parse("database_url")
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise Exception("DATABASE_URL is not set in environment variables!")
+
 DATABASES = {
-    'default': dj_database_url.parse(os.environ["DATABASE_URL"])
+    "default": dj_database_url.parse(DATABASE_URL)
 }
 
 # postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt
