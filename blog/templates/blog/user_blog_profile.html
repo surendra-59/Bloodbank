@@ -9,8 +9,12 @@
 {% endif %}
 
 {% block content %}
-    <div class="profile-header">
-        <img src="{{ user.profile_pic.url }}" class="img-fluid" width="100" height="100">
+    <div class="profile-header text-center">
+        {% if user.profile_pic %}
+            <img src="{{ user.profile_pic.url }}" class="img-fluid rounded-circle mb-2" width="100" height="100" alt="Profile Picture">
+        {% else %}
+            <i class="bi bi-person-circle fs-1 text-secondary mb-2"></i>
+        {% endif %}
         <h3>{{ user.first_name }} {{ user.last_name }}</h3>
         <p>Email: {{ user.email }}</p>
     </div>

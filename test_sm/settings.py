@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nj-n#eu$tb8&p(fxs=%z^_&7jr1093hbat*39f4v-oo%5p7l2^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 LOGIN_URL = 'login'  # Replace 'login_page' with the name of your login view
 
@@ -89,6 +97,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+database_url = os.environ.get("DATABASE_URL")
+DATABASES["default"] = dj_database_url.parse("database_url")
+
+# postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
