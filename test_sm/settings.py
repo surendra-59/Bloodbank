@@ -53,15 +53,25 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 LOGIN_URL = 'login'  # Replace 'login_page' with the name of your login view
 
 
-database_url = os.environ.get("DATABASE_URL")
-DATABASES["default"] = dj_database_url.parse("database_url")
+# database_url = os.environ.get("DATABASE_URL")
+# DATABASES["default"] = dj_database_url.parse("database_url")
+# DATABASE_URL = os.environ.get("DATABASE_URL")
+# if not DATABASE_URL:
+#     raise Exception("DATABASE_URL is not set in environment variables!")
+
+# DATABASES = {
+#     "default": dj_database_url.parse(DATABASE_URL)
+# }
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
 if not DATABASE_URL:
     raise Exception("DATABASE_URL is not set in environment variables!")
 
 DATABASES = {
     "default": dj_database_url.parse(DATABASE_URL)
 }
+
 
 # DATABASES = {
 #     'default': {
