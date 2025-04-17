@@ -1,3 +1,0 @@
-API key: 358974542787751
-API Secret: lM2PKTKB9cGvbpvE7yxKccvqjvs
-Cloud name: dcrbyi2ka
