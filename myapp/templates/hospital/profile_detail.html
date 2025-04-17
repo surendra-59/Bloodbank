@@ -1,0 +1,35 @@
+{% extends "hospital/hospital_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Hospital Information Section -->
+    <h2 class="mb-4 text-center" style="color: #FF9800;">Hospital Full Profile</h2>
+
+    <!-- Card for Hospital Information -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h4 class="mb-3" style="color: #FF9800; font-weight: bold;">Hospital Details</h4>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Hospital Name:</strong> {{ hospital.organization_name }}</li>
+            <li class="list-group-item"><strong>Email:</strong> {{ hospital.email }}</li>
+            <li class="list-group-item"><strong>Contact Number:</strong> {{ hospital.contact_number }}</li>
+            <li class="list-group-item"><strong>Address:</strong> {{ hospital.address }}</li>
+            <li class="list-group-item"><strong>Identity Proof:</strong> 
+                {% if hospital.identity %}
+                    <a href="{{ hospital.identity.url }}" target="_blank" class="btn btn-link">View File</a>
+                {% else %}
+                    Not Uploaded
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+
+    <!-- Back Button Section -->
+    <div class="d-flex justify-content-start">
+        <a href="{% url 'hospital_profile' %}" class="btn btn-warning btn-lg">
+            Back to Summary
+        </a>
+    </div>
+</div>
+{% endblock %}
+

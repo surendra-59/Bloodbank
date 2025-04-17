@@ -1,0 +1,48 @@
+{% extends "admin/admin_base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+                <!-- Display messages -->
+        <div class="card-header bg-danger text-white">
+            <h2 class="text-center">Blood Inventory</h2>
+
+        </div>
+        <div class="card-body">
+
+
+            <!-- Table for Inventory -->
+            <table class="table table-bordered table-hover text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Blood Group</th>
+                        <th>Available Units</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory %}
+                    <tr>
+                        <td><strong>{{ item.blood_group }}</strong></td>
+                        <td>{{ item.available_units }}</td>
+                        <td>
+                            <a href="{% url 'add_blood_units' item.id %}" class="btn btn-success btn-sm">➕ Add</a>
+                            <a href="{% url 'subtract_blood_units' item.id %}" class="btn btn-warning btn-sm">➖ Subtract</a>
+                            <a href="{% url 'update_blood_inventory' item.id %}" class="btn btn-info btn-sm">✏️ Update</a>
+                            <form method="POST" action="{% url 'clear_blood_inventory' item.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to clear the blood units for this group?')">🧹 Clear</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-danger">No blood inventory records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

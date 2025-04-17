@@ -1,0 +1,12 @@
+{% extends "admin/admin_base.html" %}
+
+{% block content %}
+<h2>Update Blood Inventory - {{ inventory.blood_group }}</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label for="units">Set New Available Units:</label>
+    <input type="number" name="units" step="0.1" value="{{ inventory.available_units }}" required>
+    <button type="submit">Update</button>
+</form>
+<a href="{% url 'blood_inventory' %}">Back to Inventory</a>
+{% endblock %}

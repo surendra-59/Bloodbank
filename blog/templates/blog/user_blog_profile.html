@@ -1,0 +1,32 @@
+{% if user_type == "1" %}
+    {% include 'admin/admin_base.html' %}
+{% elif user_type == "2" %}
+    {% include 'hospital/hospital_base.html' %}
+{% elif user_type == "3" %}
+    {% include 'donor/donor_base.html' %}
+{% else %}
+    {% include 'base.html' %}
+{% endif %}
+
+{% block content %}
+    <div class="profile-header">
+        <img src="{{ user.profile_pic.url }}" class="img-fluid" width="100" height="100">
+        <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+        <p>Email: {{ user.email }}</p>
+    </div>
+
+    <h4>All Posts by {{ user.first_name }}</h4>
+    {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>{{ post.author.first_name }} {{ post.author.last_name }}</strong>
+            </div>
+            <div class="card-body">
+                <p>{{ post.caption }}</p>
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" class="img-fluid">
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

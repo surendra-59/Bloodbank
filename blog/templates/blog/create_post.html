@@ -1,0 +1,61 @@
+{% if user_type == "1" %}
+    {% include 'admin/admin_base.html' %}
+{% elif user_type == "2" %}
+    {% include 'hospital/hospital_base.html' %}
+{% elif user_type == "3" %}
+    {% include 'donor/donor_base.html' %}
+{% else %}
+    {% include 'base.html' %}
+{% endif %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+        <h2>Create New Post</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="caption" class="form-label">Caption</label>
+                <!-- This textarea will be replaced by CKEditor -->
+                <textarea class="form-control" id="caption" name="caption" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image (Optional)</label>
+                <input class="form-control" type="file" id="image" name="image">
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-primary">Create Post</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- CKEditor Script for Rich Text Editor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        ClassicEditor
+            .create(document.querySelector('#caption'), {
+                toolbar: [
+                    'heading', '|',
+                    'bold', 'italic', 'link', '|',
+                    'bulletedList', 'numberedList', '|',
+                    'undo', 'redo'
+                ]
+            })
+            .then(editor => {
+                // Copy editor data to textarea on every change (optional for backend)
+                editor.model.document.on('change:data', () => {
+                    document.getElementById('caption').value = editor.getData();
+                });
+            })
+            .catch(error => {
+                console.error('CKEditor error:', error);
+            });
+    });
+</script>
+
+
+{% endblock %}

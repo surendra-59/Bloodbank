@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            const userTypeSelect = document.getElementById('id_user_type');
+            const organizationFields = document.getElementById('organization-fields');
+            const userFields = document.getElementById('user-fields');
+            const dobField = document.getElementById('id_dob');  // Date of birth field
+            const identityMessage = document.getElementById('identity-message');  // Define the identity message element
+
+            // Function to update identity message
+            function updateIdentityMessage() {
+                if (userTypeSelect.value === "2") { // Assuming 2 = Hospital
+                    identityMessage.innerHTML = "<i>Please enter Organization identity Photo, so that we can verify your registration.</i>";
+                } else {
+                    identityMessage.innerHTML = "<i>Please upload your Driving Licence/National identity's photo.</i>";
+                }
+            }
+
+            // Run the function on page load and when the selection changes
+            userTypeSelect.addEventListener("change", updateIdentityMessage);
+            updateIdentityMessage(); // Call initially to set the correct message
+
+            // Function to toggle the required attribute and field visibility
+            function toggleFields() {
+                if (userTypeSelect.value === "2") {  // Hospital
+                    organizationFields.style.display = "block";
+                    userFields.style.display = "none";
+                    dobField.removeAttribute('required');  // Disable 'required' for dob
+                    dobField.setAttribute('disabled', 'true');  // Optional: Disable dob input for hospital
+                } else {
+                    organizationFields.style.display = "none";
+                    userFields.style.display = "block";
+                    dobField.setAttribute('required', 'true');  // Enable 'required' for dob
+                    dobField.removeAttribute('disabled');  // Enable dob input for regular user
+                }
+            }
+
+            // Listen for changes in user_type
+            userTypeSelect.addEventListener('change', toggleFields);
+
+            // Initial toggle based on the current selection
+            toggleFields();
+        });
+    </script>
+
+</head>
+<body>
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Display all form errors at the top -->
+        {% if form.errors %}
+            <div style="color: red;">
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+        {% endif %}
+
+        <!-- Form fields -->
+        <p>{{ form.email.label_tag }} {{ form.email }}</p>
+        <p>{{ form.user_type.label_tag }} {{ form.user_type }}</p>
+        
+        <p>{{ form.profile_pic.label_tag }} {{ form.profile_pic }}</p>
+        <p>{{ form.address.label_tag }} {{ form.address }}</p>
+        <p>{{ form.contact_number.label_tag }} {{ form.contact_number }}</p>
+        
+        <p>{{ form.password.label_tag }} {{ form.password }}</p>
+        <p>{{ form.confirm_password.label_tag }} {{ form.confirm_password }}</p>
+        <!-- <p>{{ form.identity.label_tag }} {{ form.identity }}</p> -->
+        <p>
+            {{ form.identity.label_tag|safe }} {{ form.identity }}  
+            <br>
+            <small id="identity-message" style="color: gray;"></small>
+        </p>
+
+
+        <!-- User Fields (Visible for Regular User) -->
+        <div id="user-fields">
+            <p>{{ form.blood_group.label_tag }} {{ form.blood_group }}</p>
+            <p>{{ form.dob.label_tag }} {{ form.dob }}</p>
+            <p>{{ form.gender.label_tag }} {{ form.gender }}</p>
+            <p>{{ form.first_name.label_tag }} {{ form.first_name }}</p>
+            <p>{{ form.last_name.label_tag }} {{ form.last_name }}</p>
+        </div>
+
+        <!-- Hospital-specific fields (Visible for Hospitals) -->
+        <div id="organization-fields" style="display: none;">
+            <p>{{ form.organization_name.label_tag }} {{ form.organization_name }}</p>
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+    <p>hello</p>
+</body>
+</html>

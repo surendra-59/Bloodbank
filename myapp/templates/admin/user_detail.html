@@ -1,0 +1,125 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+    <h2 class="text-center mb-4">User Detail</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    {% if user.user_type == '2' %}
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <strong>Email:</strong> {{ user.email }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Approved:</strong> {{ user.is_approved }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Contact Number:</strong> {{ user.contact_number }}
+                            </li>
+
+                            <li class="list-group-item">
+                                <strong>Profile Picture:</strong>
+                                {% if user.profile_pic %}
+                                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-thumbnail" style="width: 150px;">
+                                {% else %}
+                                    <p>No profile picture uploaded</p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% elif user.user_type == '3' %}
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <strong>First Name:</strong> {{ user.first_name }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Last Name:</strong> {{ user.last_name }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Date of Birth:</strong> {{ user.dob }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Email:</strong> {{ user.email }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Contact Number:</strong> {{ user.contact_number }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Gender:</strong> {{ user.gender }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Profile Picture:</strong>
+                                {% if user.profile_pic %}
+                                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-thumbnail" style="width: 150px;">
+                                {% else %}
+                                    <p>No profile picture uploaded</p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    {% if user.user_type == '2' %}
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <strong>Organization Name:</strong> {{ user.organization_name }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Address:</strong> {{ user.address }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Created At:</strong> {{ user.created_at }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Updated At:</strong> {{ user.updated_at }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Identity:</strong>
+                                {% if user.identity %}
+                                    <img src="{{ user.identity.url }}" alt="Identity Image" class="img-thumbnail" style="width: 150px;">
+                                {% else %}
+                                    <p>No identity image uploaded</p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% elif user.user_type == '3' %}
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <strong>Address:</strong> {{ user.address }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Blood Group:</strong> {{ user.blood_group }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Age:</strong> {{ user.age }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Identity:</strong>
+                                {% if user.identity %}
+                                    <img src="{{ user.identity.url }}" alt="Identity Image" class="img-thumbnail" style="width: 150px;">
+                                {% else %}
+                                    <p>No identity image uploaded</p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            {% if from_pending %}
+            <a href="{% url 'pending_hospitals' %}" class="btn btn-primary mt-3">Back to Pending List</a>
+            
+            {% else %}
+            <a href="{% url 'user_update' user.pk %}" class="btn btn-warning mt-3">Update</a>
+            <a href="{% url 'user_list' %}" class="btn btn-primary mt-3">Back to User List</a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Blood Bank{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Card Container */
+    .login-card {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Input fields with icons */
+    .input-icon {
+        position: relative;
+    }
+    .input-icon input {
+        padding-left: 40px; /* Space for the left icon */
+        padding-right: 40px; /* Space for the right toggle icon */
+        border-radius: 30px;
+    }
+    .input-icon i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    .input-icon .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #6c757d;
+    }
+
+    /* Button styling */
+    .btn-custom {
+        width: 100%;
+        padding: 10px;
+        border-radius: 50px;
+        font-weight: bold;
+        background-color: #e60000; /* Blood bank red color */
+        border-color: #e60000;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #990000; /* Darker red on hover */
+        border-color: #990000;
+    }
+
+    /* Additional styling for the footer and links */
+    .footer-note {
+        font-size: 14px;
+        text-align: center;
+        margin-top: 20px;
+        color: #6c757d;
+    }
+
+    .footer-note a {
+        text-decoration: none;
+        color: #e60000; /* Blood bank red */
+    }
+
+    /* For the error message */
+    .invalid-feedback {
+        display: block;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="login-card">
+        <h2 class="text-center mb-4" style="color: #e60000;">Login</h2>
+
+        {% if messages %}
+            <div class="messages mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            <!-- Email Field -->
+            <div class="mb-3 input-icon">
+                <input 
+                    type="email" 
+                    class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                    id="floatingEmail" 
+                    placeholder="name@example.com"
+                    name="{{ form.email.name }}"
+                    value="{{ form.email.value|default:'' }}"
+                    required
+                >
+                <i class="bi bi-envelope"></i>
+                {% for error in form.email.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-3 input-icon">
+                <input 
+                    type="password" 
+                    class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                    id="floatingPassword" 
+                    placeholder="Password"
+                    name="{{ form.password.name }}"
+                    required
+                >
+                <i class="bi bi-lock"></i>
+                <button type="button" class="toggle-password" onclick="togglePassword()">
+                    <i class="bi bi-eye" id="toggleIcon"></i>
+                </button>
+                {% for error in form.password.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Login Button -->
+            <button type="submit" class="btn btn-primary btn-custom">Login</button>
+        </form>
+
+        <div class="footer-note">
+            <a href="{% url 'register' %}">Don't have an account? Register here</a><br>
+            <a href="{% url 'forget-password' %}">Forgot your password?</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById("floatingPassword");
+        const toggleIcon = document.getElementById("toggleIcon");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove("bi-eye");
+            toggleIcon.classList.add("bi-eye-slash");
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove("bi-eye-slash");
+            toggleIcon.classList.add("bi-eye");
+        }
+    }
+</script>
+{% endblock %}

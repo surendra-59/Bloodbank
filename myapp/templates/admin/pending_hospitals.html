@@ -1,0 +1,37 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+    <h2>Pending Hospital Approvals</h2>
+
+        <!-- Search Form -->
+    <form method="GET" action="{% url 'pending_hospitals' %}" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by organization or email">
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Organization Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hospital in hospitals %}
+            <tr>
+                <td>{{ hospital.organization_name }}</td>
+                <td>{{ hospital.email }}</td>
+
+                <td>
+                    <a href="{% url 'user_detail' hospital.id %}?from_pending=True" class="btn btn-info">View</a>
+
+
+                    <a href="{% url 'approve_hospital' hospital.id %}" class="btn btn-success">Approve</a>
+
+                    <a href="{% url 'user_delete' hospital.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

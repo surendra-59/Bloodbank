@@ -1,0 +1,14 @@
+{% extends 'hospital/hospital_base.html' %}
+
+{% block content %}
+    <h2>Hospital Dashboard</h2>
+    
+    <p>Welcome to your dashboard. Here you can view and request blood.</p>
+
+    <!-- Button to Request Blood -->
+    <a href="{% url 'hospital_request_blood' %}" class="btn btn-primary">Request Blood</a>
+
+    <!-- Button to View Blood Requests Status -->
+    <a href="{% url 'hospital_view_requests' %}" class="btn btn-info">View Blood Requests</a>
+
+{% endblock %}

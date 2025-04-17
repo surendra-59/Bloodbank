@@ -1,0 +1,20 @@
+{% extends "admin/admin_base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Record Blood Donation</h2>
+    <p>Donor: {{ donor_response.donor.name }}</p>
+    <p>Blood Group: {{ donor_response.blood_request.blood_group }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="blood_unit_donated">Blood Units Donated:</label>
+            <input type="number" name="blood_unit_donated" id="blood_unit_donated" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Donation</button>
+        <a href="{% url 'admin_blood_requests' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

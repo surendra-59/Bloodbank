@@ -1,0 +1,120 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Hospital Blood Requests</h2>
+
+    <!-- Pending Requests -->
+    <div class="card mb-5">
+        <div class="card-header bg-warning text-white">
+            <h4 class="mb-0">Pending Requests</h4>
+        </div>
+        <div class="card-body table-responsive">
+            {% if pending_requests %}
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hospital</th>
+                            <th>Blood Group</th>
+                            <th>Units Requested</th>
+                            <th>Contact</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in pending_requests %}
+                        <tr>
+                            <td>{{ request.hospital_name_snapshot }}</td>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_requested }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>
+                                <!-- Accept Button triggers Modal -->
+                                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#acceptModal{{ request.id }}">Accept</button>
+
+                                <!-- Reject Button -->
+                                <a href="{% url 'admin_reject_request' request.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to reject this request?')">Reject</a>
+                            </td>
+                        </tr>
+
+                        <!-- Accept Modal -->
+                        <div class="modal fade" id="acceptModal{{ request.id }}" tabindex="-1" aria-labelledby="acceptModalLabel{{ request.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form method="POST" action="{% url 'admin_accept_request' request.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="acceptModalLabel{{ request.id }}">Approve Units</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label for="approved_units">Approved Units:</label>
+                                            <input type="number" name="approved_units" step="0.1" class="form-control" required>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">OK</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted">No pending requests.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Processing Requests -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Processing Requests</h4>
+        </div>
+        <div class="card-body table-responsive">
+            {% if processing_requests %}
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hospital</th>
+                            <th>Blood Group</th>
+                            <th>Units Approved</th>
+                            <th>Contact</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in processing_requests %}
+                        <tr>
+                            <td>{{ request.hospital_name_snapshot }}</td>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_approved }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>
+                                <a href="{% url 'admin_mark_delivered' request.id %}" class="btn btn-success btn-sm">Delivered</a>
+                                <a href="{% url 'admin_mark_failed' request.id %}" class="btn btn-warning btn-sm">Failed</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted">No processing requests.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Bootstrap JS (if not already included in base.html) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

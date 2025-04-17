@@ -1,0 +1,99 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2 class="mb-3">Accepted Donors for Blood Request</h2>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h4 class="card-title">Blood Group: {{ blood_request.blood_group }}</h4>
+                <p class="card-text"><strong>Location:</strong> {{ blood_request.location }}</p>
+                <p class="card-text"><strong>Created At:</strong> {{ blood_request.created_at }}</p>
+            </div>
+        </div>
+
+        <!-- Selected Donors Table -->
+        <h3 class="mb-3">Selected Donors</h3>
+
+        {% if selected_donors %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Accepted At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donor_response in selected_donors %}
+                            <tr>
+                                <td>{{ donor_response.donor.first_name }} {{ donor_response.donor.last_name }}</td>
+                                <td>{{ donor_response.donor.email }}</td>
+                                <td>{{ donor_response.created_at }}</td>
+                                <td>
+       
+                                    <a href="{% url 'save_blood_donation' donor_response.id %}" class="btn btn-primary btn-sm">
+                                        Save Donation
+                                    </a>
+                                    <form method="POST" action="{% url 'unselect_donor' donor_response.id %}" class="d-inline ms-1">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Unselect
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                No selected donors for this request yet.
+            </div>
+        {% endif %}
+
+        <!-- Unselected Donors Table -->
+        <h3 class="mb-3">Unselected Donors</h3>
+
+        {% if unselected_donors %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Accepted At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donor_response in unselected_donors %}
+                            <tr>
+                                <td>{{ donor_response.donor.first_name }} {{ donor_response.donor.last_name }}</td>
+                                <td>{{ donor_response.donor.email }}</td>
+                                <td>{{ donor_response.created_at }}</td>
+                                <td>
+
+
+                                    <form method="POST" action="{% url 'select_donor' donor_response.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Select
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                No unselected donors for this request yet.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+    <h2>Admin Dashboard</h2>
+
+
+    <p>Welcome, Admin! Manage hospital approvals and blood requests here.</p>
+    <a href="{% url 'pending_hospitals' %}" class="btn btn-primary">View Pending Hospital Approvals</a>
+    <a href="{% url 'admin_blood_requests' %}" class="btn btn-warning">Admin Blood Request</a>
+    <a href="{% url 'admin_manage_hospital_requests' %}" class="btn btn-warning">Hospital Blood Request</a>
+
+    <a href="{% url 'blood_inventory' %}" class="btn btn-warning">Blood Inventory</a>
+{% endblock %}

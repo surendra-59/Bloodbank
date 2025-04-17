@@ -1,0 +1,35 @@
+{% extends "hospital/hospital_base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Request Blood</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="blood_group" class="form-label">Blood Group</label>
+            <select name="blood_group" id="blood_group" class="form-control" required>
+                <option value="">-- Select Blood Group --</option>
+                {% for group_value, group_label in blood_groups %}
+                    <option value="{{ group_value }}">{{ group_label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="units_requested" class="form-label">Units Requested</label>
+            <input type="number" step="0.1" min="0" name="units_requested" id="units_requested" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="address" class="form-label">Delivery Address</label>
+            <textarea name="address" id="address" rows="3" class="form-control" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="contact_number" class="form-label">Contact Number</label>
+            <input type="text" name="contact_number" id="contact_number" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+    </form>
+</div>
+{% endblock %}

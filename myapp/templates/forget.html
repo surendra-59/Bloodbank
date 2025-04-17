@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Forget Password{% endblock %}
+
+{% block content %}
+<div class="form-container">
+        {% if messages %}
+            <div class="messages mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        
+        {% endif %}
+    <h3 class="form-title">Forgot Password</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="email" class="form-label">Enter your registered email</label>
+            <input type="email" class="form-control" name="email" required placeholder="you@example.com">
+        </div>
+        <button type="submit" class="btn btn-primary">Send Reset Link</button>
+    </form>
+    <p class="footer-note">
+        <a href="{% url 'login' %}">Back to Login</a>
+    </p>
+</div>
+{% endblock %}

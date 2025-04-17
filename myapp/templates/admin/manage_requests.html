@@ -1,0 +1,33 @@
+<!-- Manage Blood Requests: manage_requests.html -->
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+    <h2>Manage Blood Requests</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Blood Group</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in blood_requests %}
+            <tr>
+                <td>{{ request.blood_group }}</td>
+                <td>{{ request.location }}</td>
+                <td>{{ request.get_status_display }}</td>
+                <td>
+                    {% if request.status == 'pending' %}
+                        <a href="{% url 'update_blood_request_status' request.id %}" class="btn btn-warning">Mark as Processing</a>
+                    {% elif request.status == 'processing' %}
+                        <a href="{% url 'update_blood_request_status' request.id %}" class="btn btn-success">Mark as Completed</a>
+                    {% else %}
+                        <span class="btn btn-success disabled">Completed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

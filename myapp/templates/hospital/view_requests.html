@@ -1,0 +1,218 @@
+{% extends 'hospital/hospital_base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">My Blood Requests</h2>
+
+    <!-- Tab Navigation with Icons and Hover Effects -->
+    <ul class="nav nav-tabs" id="requestTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active pending-tab" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab" aria-controls="pending" aria-selected="true">
+                <i class="fas fa-hourglass-start me-2"></i> Pending Requests
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link processing-tab" id="processing-tab" data-bs-toggle="tab" href="#processing" role="tab" aria-controls="processing" aria-selected="false">
+                <i class="fas fa-cogs me-2"></i> Processing Requests
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link delivered-tab" id="delivered-tab" data-bs-toggle="tab" href="#delivered" role="tab" aria-controls="delivered" aria-selected="false">
+                <i class="fas fa-check-circle me-2"></i> Delivered Requests
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link rejected-tab" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab" aria-controls="rejected" aria-selected="false">
+                <i class="fas fa-times-circle me-2"></i> Rejected Requests
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link failed-tab" id="failed-tab" data-bs-toggle="tab" href="#failed" role="tab" aria-controls="failed" aria-selected="false">
+                <i class="fas fa-ban me-2"></i> Failed Requests
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content mt-3" id="requestTabsContent">
+        <!-- Pending Requests -->
+        <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+            <h4 class="text-primary">Pending Requests</h4>
+            {% if pending_requests %}
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Blood Group</th>
+                            <th>Units Requested</th>
+                            <th>Address</th>
+                            <th>Contact Number</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in pending_requests %}
+                        <tr>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_requested }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <a href="{% url 'hospital_delete_request' request.id %}" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Are you sure you want to delete this request?');">
+                                   Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No pending requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Processing Requests -->
+        <div class="tab-pane fade" id="processing" role="tabpanel" aria-labelledby="processing-tab">
+            <h4 class="text-warning">Processing Requests</h4>
+            {% if processing_requests %}
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Blood Group</th>
+                            <th>Units Requested</th>
+                            <th>Units Approved</th>
+                            <th>Address</th>
+                            <th>Contact Number</th>
+                            <th>Approved By</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in processing_requests %}
+                        <tr>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_requested }}</td>
+                            <td>{{ request.units_approved }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.admin.first_name }} {{ request.admin.last_name }}</td>
+                            <td>{{ request.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No processing requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Delivered Requests -->
+        <div class="tab-pane fade" id="delivered" role="tabpanel" aria-labelledby="delivered-tab">
+            <h4 class="text-success">Delivered Requests</h4>
+            {% if delivered_requests %}
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Blood Group</th>
+                            <th>Units Delivered</th>
+                            <th>Address</th>
+                            <th>Contact Number</th>
+                            <th>Delivered By</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in delivered_requests %}
+                        <tr>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_approved }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.admin.first_name }} {{ request.admin.last_name }}</td>
+                            <td>{{ request.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No delivered requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Rejected Requests -->
+        <div class="tab-pane fade" id="rejected" role="tabpanel" aria-labelledby="rejected-tab">
+            <h4 class="text-danger">Rejected Requests</h4>
+            {% if rejected_requests %}
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Blood Group</th>
+                            <th>Units Requested</th>
+                            <th>Address</th>
+                            <th>Contact Number</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in rejected_requests %}
+                        <tr>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_requested }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No rejected requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Failed Requests -->
+        <div class="tab-pane fade" id="failed" role="tabpanel" aria-labelledby="failed-tab">
+            <h4 class="text-danger">Failed Requests</h4>
+            {% if failed_requests %}
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Blood Group</th>
+                            <th>Units Requested</th>
+                            <th>Address</th>
+                            <th>Contact Number</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in failed_requests %}
+                        <tr>
+                            <td>{{ request.blood_group }}</td>
+                            <td>{{ request.units_requested }}</td>
+                            <td>{{ request.address }}</td>
+                            <td>{{ request.contact_number }}</td>
+                            <td>{{ request.updated_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No failed requests.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

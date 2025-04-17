@@ -1,0 +1,69 @@
+{% extends "donor/donor_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Donor Information Section -->
+    <h2 class="mb-4 text-center" style="color: #FF9800;">Full Donor Information</h2>
+
+    <!-- Card for Donor Information -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h4 class="mb-3" style="color: #FF9800; font-weight: bold;">Personal Information</h4>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Full Name:</strong> {{ user.first_name }} {{ user.last_name }}</li>
+            <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+            <li class="list-group-item"><strong>Date of Birth:</strong> {{ user.dob }}</li>
+            <li class="list-group-item"><strong>Gender:</strong> {{ user.gender }}</li>
+            <li class="list-group-item"><strong>Age:</strong> {{ user.age }}</li>
+            <li class="list-group-item"><strong>Blood Group:</strong> {{ user.blood_group }}</li>
+            <li class="list-group-item"><strong>Contact:</strong> {{ user.contact_number }}</li>
+            <li class="list-group-item"><strong>Address:</strong> {{ user.address }}</li>
+            <li class="list-group-item"><strong>Identity Proof:</strong> 
+                {% if user.identity %}
+                    <a href="{{ user.identity.url }}" target="_blank" class="btn btn-link">View File</a>
+                {% else %}
+                    Not Uploaded
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+
+    <!-- Donation History Section -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h4 class="mb-3" style="color: #FF9800; font-weight: bold;">Donation History</h4>
+        {% if donation_data %}
+        <!-- Make the table responsive -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Blood Group</th>
+                        <th>Unit Donated</th>
+                        <th>Location</th>
+                        <th>Donated date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in donation_data %}
+                    <tr>
+                        <td>{{ d.blood_group }}</td>
+                        <td>{{ d.unit }}</td>
+                        <td>{{ d.location }}</td>
+                        <td>{{ d.donated_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No donations yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Back Button Section -->
+    <div class="d-flex justify-content-start">
+        <a href="{% url 'donor_profile' %}" class="btn btn-warning btn-lg">
+            Back to Summary
+        </a>
+    </div>
+</div>
+{% endblock %}

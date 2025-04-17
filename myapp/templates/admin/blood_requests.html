@@ -1,0 +1,29 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+    <h2>Blood Requests</h2>
+        <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="blood_group" class="form-label">Blood Group</label>
+            <select name="blood_group" class="form-select" required>
+                {% for code, name in blood_groups %}
+                    <option value="{{ code }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" name="location" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Request Blood</button>
+    </form>
+{% endblock %}

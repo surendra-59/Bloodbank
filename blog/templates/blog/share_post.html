@@ -1,0 +1,15 @@
+<h3>Share Post</h3>
+<p><strong>{{ original_post.author.first_name }} {{ original_post.author.last_name }}</strong>'s post:</p>
+<p>{{ original_post.caption }}</p>
+{% if original_post.image %}
+    <img src="{{ original_post.image.url }}" class="img-fluid">
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="caption" class="form-label">Your Caption (Optional)</label>
+        <textarea class="form-control" id="caption" name="caption" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Share Post</button>
+</form>

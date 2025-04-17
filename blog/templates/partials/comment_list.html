@@ -1,0 +1,19 @@
+{% for comment in comments %}
+<div class="mt-2 border-bottom pb-2">
+    <div class="d-flex align-items-center">
+        <img src="{{ comment.user.profile_pic.url }}" class="rounded-circle me-2" width="30" height="30">
+        <strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong>
+        <span class="ms-2 text-muted">
+            {% if comment.user.user_type == "1" %}
+                Admin
+            {% elif comment.user.user_type == "2" %}
+                Hospital
+            {% else %}
+                Donor
+            {% endif %}
+        </span>
+    </div>
+    <p class="mb-1">{{ comment.content }}</p>
+    <small class="text-muted">{{ comment.commented_at|timesince }} ago</small>
+</div>
+{% endfor %}

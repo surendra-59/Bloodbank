@@ -1,0 +1,33 @@
+{% extends 'donor/donor_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center">
+                {% if user.profile_pic %}
+                    <img src="{{ user.profile_pic.url }}" class="rounded-circle mb-3" width="150">
+                {% else %}
+                    <img src="{% static 'images/default-profile.png' %}" class="rounded-circle mb-3" width="150">
+                {% endif %}
+                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                <p>{{ user.email }}</p>
+                <p>Total Donations: {{ user.donation_count }}</p>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                    <!-- View Details Button -->
+                    <a href="{% url 'donor_profile_detail' %}" class="btn btn-info btn-lg mb-2">View Details</a>
+
+                    <!-- Update Profile Button -->
+                    <a href="{% url 'donor_profile_update' %}" class="btn btn-warning btn-lg mb-2">Update Profile</a>
+
+                    <!-- Change Password Button -->
+                    <a href="{% url 'password_change' %}" class="btn btn-danger btn-lg mb-2">Change Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

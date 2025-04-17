@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    {% block style %}
+    <style>
+        /* Custom Alert */
+        .custom-alert {
+            max-width: 400px;
+            margin: 1rem auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            animation: slideDown 0.5s ease-out;
+            font-size: 0.95rem;
+        }
+
+        /* Slide-down Animation */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Custom Close Button */
+        .btn-close {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+        }
+
+        /* Tab Styling */
+        .nav-tabs .nav-link {
+            border-radius: 25px !important;
+            font-weight: bold;
+            transition: all 0.3s ease !important;
+        }
+
+        /* Hover Effect for Pending Tab */
+        .nav-tabs .nav-link.pending-tab:hover {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        /* Hover Effect for Processing Tab */
+        .nav-tabs .nav-link.processing-tab:hover {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+        }
+
+        /* Hover Effect for Delivered Tab */
+        .nav-tabs .nav-link.delivered-tab:hover {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        /* Hover Effect for Rejected Tab */
+        .nav-tabs .nav-link.rejected-tab:hover {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        /* Hover Effect for Failed Tab */
+        .nav-tabs .nav-link.failed-tab:hover {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        /* Active Tab Styles for Pending Tab */
+        .nav-tabs .nav-link.pending-tab.active {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border-color: #721c24 !important;
+        }
+
+        /* Active Tab Styles for Processing Tab */
+        .nav-tabs .nav-link.processing-tab.active {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            border-color: #856404 !important;
+        }
+
+        /* Active Tab Styles for Delivered Tab */
+        .nav-tabs .nav-link.delivered-tab.active {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            border-color: #155724 !important;
+        }
+
+        /* Active Tab Styles for Rejected Tab */
+        .nav-tabs .nav-link.rejected-tab.active {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border-color: #721c24 !important;
+        }
+
+        /* Active Tab Styles for Failed Tab */
+        .nav-tabs .nav-link.failed-tab.active {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border-color: #721c24 !important;
+        }
+
+        /* Icon Hover Effect */
+        .nav-tabs .nav-link i {
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover i {
+            transform: rotate(360deg);
+        }
+
+    {% endblock %}
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Blood Bank Hospital</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'hospital_dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'hospital_profile' %}">Profile</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <div class="d-flex flex-column align-items-center">
+            {% for message in messages %}
+                <div class="alert alert-dismissible fade show custom-alert 
+                    {% if message.tags == 'success' %}alert-success
+                    {% elif message.tags == 'error' %}alert-danger
+                    {% elif message.tags == 'warning' %}alert-warning
+                    {% else %}alert-info{% endif %}" role="alert">
+                    
+                    {{ message }}
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="container mt-4">
+        {% block content %}
+        <!-- Content will be inserted here by child templates -->
+        {% endblock %}
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <p>&copy; 2025 Blood Donation System. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Auto-dismiss alerts after 4 seconds -->
+    <script>
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            });
+        }, 15000);
+    </script>
+
+    <!-- it is for comment part of blog -->
+    <script>
+        // function toggleComments(postId) {
+        //     const section = document.getElementById(`comments-${postId}`);
+        //     // Close all other comment sections (only those starting with 'comments-')
+        //     const allSections = document.querySelectorAll('[id^="comments-"]');
+        //     allSections.forEach((sec) => {
+        //         if (sec.id !== `comments-${postId}`) {
+        //             sec.style.display = "none";
+        //         }
+        //     });
+        //     // Toggle the clicked section
+        //     section.style.display = (section.style.display === "none") ? "block" : "none";
+        // }
+
+        // function showAllComments(postId) {
+        //     const hiddenComments = document.querySelectorAll(`.comment-item-${postId}.d-none`);
+        //     hiddenComments.forEach(comment => comment.classList.remove("d-none"));
+
+        //     const btn = document.getElementById(`view-more-btn-${postId}`);
+        //     if (btn) btn.remove();
+        // }
+
+        function likePost(event, postId) {
+            event.preventDefault();
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch(`/blog/toggle-like/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const btn = document.getElementById(`like-btn-${postId}`);
+                const countSpan = document.getElementById(`like-count-${postId}`);
+
+                if (data.liked) {
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-danger');
+                } else {
+                    btn.classList.remove('btn-danger');
+                    btn.classList.add('btn-outline-danger');
+                }
+
+                countSpan.textContent = data.like_count;
+            });
+        }
+        let commentPage = {};  // Track current page per post
+
+        function toggleComments(postId) {
+            const section = document.getElementById(`comments-${postId}`);
+            const isCurrentlyVisible = section.style.display === 'block';
+
+            // Hide all comment sections
+            document.querySelectorAll("[id^='comments-']").forEach(s => {
+                s.style.display = 'none';
+            });
+
+            // Toggle the current one
+            if (!isCurrentlyVisible) {
+                section.style.display = 'block';
+
+                if (!commentPage[postId]) {
+                    commentPage[postId] = 1;
+                    loadComments(postId, 1);
+                } else {
+                    loadComments(postId, commentPage[postId]);
+                }
+            }
+        }
+
+
+        function loadComments(postId, page) {
+            fetch(`/blog/get-comments/${postId}/?page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById(`comment-list-${postId}`);
+                    container.innerHTML = ""; // Clear previous comments
+
+                    data.comments.forEach(comment => {
+                        const div = document.createElement("div");
+                        div.className = "mt-2 border-bottom pb-2";
+                        div.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <img src="${comment.profile_pic}" class="rounded-circle me-2" width="30" height="30">
+                                <strong>${comment.first_name} ${comment.last_name}</strong>
+                                <span class="ms-2 text-muted">${comment.user_type}</span>
+                            </div>
+                            <p class="mb-1">${comment.content}</p>
+                            <small class="text-muted">${comment.time_since} ago</small>
+                        `;
+                        container.appendChild(div);
+                    });
+
+                    // Update current page
+                    commentPage[postId] = page;
+
+                    const nextBtn = document.getElementById(`next-comments-btn-${postId}`);
+                    const backBtn = document.getElementById(`back-comments-btn-${postId}`);
+
+                    // Next button
+                    if (data.has_next) {
+                        nextBtn.classList.remove("d-none");
+                    } else {
+                        nextBtn.classList.add("d-none");
+                    }
+
+                    // Back button
+                    if (page > 1) {
+                        backBtn.classList.remove("d-none");
+                    } else {
+                        backBtn.classList.add("d-none");
+                    }
+                });
+        }
+
+        function nextComments(postId) {
+            const currentPage = commentPage[postId] || 1;
+            loadComments(postId, currentPage + 1);
+        }
+
+        function prevComments(postId) {
+            const currentPage = commentPage[postId] || 1;
+            if (currentPage > 1) {
+                loadComments(postId, currentPage - 1);
+            }
+        }
+
+        function submitComment(event, postId) {
+            event.preventDefault();
+            const form = document.getElementById(`comment-form-${postId}`);
+            const formData = new FormData(form);
+
+            fetch(`/blog/comment/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    commentPage[postId] = 1;
+                    loadComments(postId, 1);  // Refresh first page
+                    form.reset();
+                }
+            });
+        }
+        function showImage(imageUrl) {
+            // Set the image source for the modal when an image is clicked
+            document.getElementById('modalImage').src = imageUrl;
+        }
+
+        {% block scripts %}{% endblock %}
+
+
+    </script>
+</body>
+</html>

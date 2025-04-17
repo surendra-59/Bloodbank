@@ -1,0 +1,76 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+    <h2 class="text-center mb-4">User List</h2>
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+        <!-- Search Form -->
+    <form method="GET" action="{% url 'user_list' %}" class="mb-3">
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name or email">
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </form>
+
+    <!-- Users with user_type 2 -->
+    <h3 class="mb-4">Hospitals</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Organization Name</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                {% if user.user_type == '2' %}
+                    <tr>
+                        <td>{{ user.organization_name }}</td>
+                        <td>{{ user.contact_number }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <a href="{% url 'user_detail' user.pk %}" class="btn btn-info btn-sm">View Details</a>
+                            <a href="{% url 'user_update' user.pk %}" class="btn btn-warning btn-sm">Update</a>
+                            <a href="{% url 'user_delete' user.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Users with user_type 3 -->
+    <h3 class="mb-4">Donars</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                {% if user.user_type == '3' %}
+                    <tr>
+                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                        <td>{{ user.contact_number }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <a href="{% url 'user_detail' user.pk %}" class="btn btn-info btn-sm">View Details</a>
+                            <a href="{% url 'user_update' user.pk %}" class="btn btn-warning btn-sm">Update</a>
+                            <a href="{% url 'user_delete' user.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

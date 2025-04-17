@@ -1,0 +1,136 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="card shadow p-4">
+            <h2 class="text-center mb-4">Update User: {{ user.first_name }} {{ user.last_name }}</h2>
+            
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    {% if user.user_type == "2" %}
+                        <!-- Hospital (User Type 2) Fields -->
+                        <div class="col-md-6">
+                            <label for="id_email" class="form-label fw-bold">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_is_approved" class="form-label fw-bold">Approval Status</label>
+                            {{ form.is_approved }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_contact_number" class="form-label fw-bold">Contact Number</label>
+                            {{ form.contact_number }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_organization_name" class="form-label fw-bold">Organization Name</label>
+                            {{ form.organization_name }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_address" class="form-label fw-bold">Address</label>
+                            {{ form.address }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Created At</label>
+                            <input type="text" class="form-control" value="{{ user.created_at }}" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Updated At</label>
+                            <input type="text" class="form-control" value="{{ user.updated_at }}" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_profile_pic" class="form-label fw-bold">Profile Picture</label>
+                            {{ form.profile_pic }}
+                            {% if user.profile_pic %}
+                                <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mt-2" style="width: 80px; height: 80px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_identity" class="form-label fw-bold">Identity Document</label>
+                            {{ form.identity }}
+                            {% if user.identity %}
+                                <img src="{{ user.identity.url }}" alt="Identity Document" class="rounded mt-2" style="width: 100px;">
+                            {% endif %}
+                        </div>
+
+                    {% elif user.user_type == "3" %}
+                        <!-- Regular User (User Type 3) Fields -->
+                        <div class="col-md-6">
+                            <label for="id_first_name" class="form-label fw-bold">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_last_name" class="form-label fw-bold">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_dob" class="form-label fw-bold">Date of Birth</label>
+                            {{ form.dob }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_email" class="form-label fw-bold">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_contact_number" class="form-label fw-bold">Contact Number</label>
+                            {{ form.contact_number }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_gender" class="form-label fw-bold">Gender</label>
+                            {{ form.gender }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_blood_group" class="form-label fw-bold">Blood Group</label>
+                            {{ form.blood_group }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_age" class="form-label fw-bold">Age</label>
+                            {{ form.age }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_profile_pic" class="form-label fw-bold">Profile Picture</label>
+                            {{ form.profile_pic }}
+                            {% if user.profile_pic %}
+                                <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mt-2" style="width: 80px; height: 80px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_identity" class="form-label fw-bold">Identity Document</label>
+                            {{ form.identity }}
+                            {% if user.identity %}
+                                <img src="{{ user.identity.url }}" alt="Identity Document" class="rounded mt-2" style="width: 100px;">
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_address" class="form-label fw-bold">Address</label>
+                            {{ form.address }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

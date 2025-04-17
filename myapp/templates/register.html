@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | Blood Bank{% endblock %}
+
+{% block extra_head %}
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    .register-card {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-step {
+        display: none;
+    }
+
+    .form-step.active {
+        display: block;
+    }
+
+    .progress {
+        height: 8px;
+        margin-bottom: 20px;
+    }
+
+    .profile-preview {
+        display: block;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-top: 10px;
+    }
+
+    .strength-meter {
+        height: 6px;
+        margin-top: 5px;
+    }
+
+    .strength-weak {
+        background: #dc3545;
+    }
+
+    .strength-medium {
+        background: #ffc107;
+    }
+
+    .strength-strong {
+        background: #28a745;
+    }
+
+    .btn-group-nav {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-card mt-4">
+
+    <h3 class="text-center text-danger mb-4">Register</h3>
+
+    <div class="progress">
+        <div class="progress-bar bg-danger" role="progressbar" id="progress-bar" style="width: 33%"></div>
+    </div>
+
+    {% if messages %}
+        <div class="messages mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="registerForm">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                <ul class="mb-0">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <!-- Step 1: Basic Info -->
+        <div class="form-step active">
+            <div class="mb-3">
+                {{ form.email.label_tag }} {{ form.email }}
+            </div>
+            <div class="mb-3">
+                {{ form.user_type.label_tag }} {{ form.user_type }}
+            </div>
+            <div class="mb-3">
+                {{ form.profile_pic.label_tag }} {{ form.profile_pic }}
+                <img id="profilePreview" class="profile-preview d-none" />
+            </div>
+            <div class="mb-3">
+                {{ form.identity.label_tag|safe }} {{ form.identity }}
+                <small id="identity-message" class="text-muted d-block mt-1"></small>
+            </div>
+        </div>
+
+        <!-- Step 2: Contact & Security -->
+        <div class="form-step">
+            <div class="mb-3">
+                {{ form.address.label_tag }} {{ form.address }}
+            </div>
+            <div class="mb-3">
+                {{ form.contact_number.label_tag }} {{ form.contact_number }}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label_tag }} {{ form.password }}
+                <div class="strength-meter bg-light" id="strengthMeter"></div>
+            </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label_tag }} {{ form.confirm_password }}
+            </div>
+        </div>
+
+        <!-- Step 3: Personal or Hospital Info -->
+        <div class="form-step">
+            <div id="user-fields">
+                <div class="mb-3">{{ form.blood_group.label_tag }} {{ form.blood_group }}</div>
+                <div class="mb-3">{{ form.dob.label_tag }} {{ form.dob }}</div>
+                <div class="mb-3">{{ form.gender.label_tag }} {{ form.gender }}</div>
+                <div class="mb-3">{{ form.first_name.label_tag }} {{ form.first_name }}</div>
+                <div class="mb-3">{{ form.last_name.label_tag }} {{ form.last_name }}</div>
+            </div>
+            <div id="organization-fields" style="display: none;">
+                <div class="mb-3">{{ form.organization_name.label_tag }} {{ form.organization_name }}</div>
+            </div>
+        </div>
+
+        <div class="btn-group-nav mt-4">
+            <div class="d-flex flex-column">
+                <button type="button" class="btn btn-outline-secondary mb-2" id="prevBtn" disabled>Back</button>
+                <a href="{% url 'login' %}" class="btn btn-outline-dark">Already have account?</a>
+            </div>
+            <div>
+                <button type="button" class="btn btn-danger" id="nextBtn">Next</button>
+            </div>
+        </div>
+        <div class="mt-3 text-center">
+            <button type="submit" class="btn btn-success w-100 d-none" id="submitBtn">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const steps = document.querySelectorAll('.form-step');
+    let currentStep = 0;
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressBar = document.getElementById('progress-bar');
+
+    function updateStep() {
+        steps.forEach((step, index) => {
+            step.classList.toggle('active', index === currentStep);
+        });
+
+        prevBtn.disabled = currentStep === 0;
+        nextBtn.classList.toggle('d-none', currentStep === steps.length - 1);
+        submitBtn.classList.toggle('d-none', currentStep !== steps.length - 1);
+        progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        const currentFields = steps[currentStep].querySelectorAll('input, select, textarea');
+
+        let allValid = true;
+        currentFields.forEach(field => {
+            if (!field.checkValidity()) {
+                field.reportValidity();
+                allValid = false;
+            }
+        });
+
+        if (allValid && currentStep < steps.length - 1) {
+            currentStep++;
+            updateStep();
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) currentStep--;
+        updateStep();
+    });
+
+    // Toggle fields based on user_type
+    const userTypeSelect = document.getElementById('id_user_type');
+    const organizationFields = document.getElementById('organization-fields');
+    const userFields = document.getElementById('user-fields');
+    const dobField = document.getElementById('id_dob');
+    const identityMessage = document.getElementById('identity-message');
+
+    function updateIdentityMessage() {
+        if (userTypeSelect.value === "2") {
+            identityMessage.innerHTML = "<i>Upload your organization identity photo for verification.</i>";
+        } else {
+            identityMessage.innerHTML = "<i>Upload a valid identity photo (License/National ID).</i>";
+        }
+    }
+
+    function toggleFields() {
+        if (userTypeSelect.value === "2") {
+            organizationFields.style.display = "block";
+            userFields.style.display = "none";
+            dobField.removeAttribute('required');
+            dobField.setAttribute('disabled', true);
+        } else {
+            organizationFields.style.display = "none";
+            userFields.style.display = "block";
+            dobField.setAttribute('required', true);
+            dobField.removeAttribute('disabled');
+        }
+    }
+
+    userTypeSelect.addEventListener('change', () => {
+        updateIdentityMessage();
+        toggleFields();
+    });
+
+    updateIdentityMessage();
+    toggleFields();
+
+    // Password strength meter
+    const passwordInput = document.getElementById('id_password');
+    const strengthMeter = document.getElementById('strengthMeter');
+
+    passwordInput.addEventListener('input', function () {
+        const value = passwordInput.value;
+        let strength = 0;
+        if (value.length > 5) strength++;
+        if (/[A-Z]/.test(value)) strength++;
+        if (/\d/.test(value)) strength++;
+        if (/[\W]/.test(value)) strength++;
+
+        strengthMeter.className = 'strength-meter';
+        if (strength <= 1) {
+            strengthMeter.classList.add('strength-weak');
+        } else if (strength === 2 || strength === 3) {
+            strengthMeter.classList.add('strength-medium');
+        } else {
+            strengthMeter.classList.add('strength-strong');
+        }
+    });
+
+    // Profile picture preview
+    const profileInput = document.getElementById('id_profile_pic');
+    const previewImg = document.getElementById('profilePreview');
+
+    profileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            previewImg.src = URL.createObjectURL(file);
+            previewImg.classList.remove('d-none');
+        }
+    });
+</script>
+{% endblock %}

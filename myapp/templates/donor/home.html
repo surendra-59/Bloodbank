@@ -1,0 +1,11 @@
+{% extends 'donor/donor_base.html' %}
+
+{% block content %}
+    <h2>Donor Dashboard</h2>
+    
+    <p>Welcome to your blog feed.</p>
+
+    <a href="{% url 'blog:create_post' %}" class="btn btn-primary">Create New Post</a>
+
+    {% include 'blog/feed.html' %}
+{% endblock %}
