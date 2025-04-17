@@ -15,6 +15,8 @@ import os
 import dj_database_url
 
 
+
+
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -41,7 +43,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-nj-n#eu$tb8&p(fxs=%z^_&7jr1093hbat*39f4v-oo%5p7l2^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+# DEBUG = False
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -56,22 +58,22 @@ LOGIN_URL = 'login'  # Replace 'login_page' with the name of your login view
 
 # database_url = os.environ.get("DATABASE_URL")
 # DATABASES["default"] = dj_database_url.parse("database_url")
-# DATABASE_URL = os.environ.get("DATABASE_URL")
-# if not DATABASE_URL:
-#     raise Exception("DATABASE_URL is not set in environment variables!")
-
-# DATABASES = {
-#     "default": dj_database_url.parse(DATABASE_URL)
-# }
-
 DATABASE_URL = os.environ.get("DATABASE_URL")
-
 if not DATABASE_URL:
     raise Exception("DATABASE_URL is not set in environment variables!")
 
 DATABASES = {
     "default": dj_database_url.parse(DATABASE_URL)
 }
+
+# DATABASE_URL = os.environ.get("DATABASE_URL")
+
+# if not DATABASE_URL:
+#     raise Exception("DATABASE_URL is not set in environment variables!")
+
+# DATABASES = {
+#     "default": dj_database_url.parse('postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt')
+# }
 
 
 # DATABASES = {
@@ -235,27 +237,25 @@ MESSAGE_TAGS = {
 }
 
 
-import cloudinary
-import os
+# import cloudinary
+# import os
 
-cloudinary.config( 
-  cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
-  api_key = os.getenv('CLOUDINARY_API_KEY'), 
-  api_secret = os.getenv('CLOUDINARY_API_SECRET') 
-)
+# cloudinary.config( 
+#   cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
+#   api_key = os.getenv('CLOUDINARY_API_KEY'), 
+#   api_secret = os.getenv('CLOUDINARY_API_SECRET') 
+# )
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# import cloudinary
+# import cloudinary.uploader
+# import cloudinary.api
 
+# # Add cloudinary settings
+# cloudinary.config(
+#     cloud_name='dcrbyi2ka',
+#     api_key='358974542787751',
+#     api_secret='lM2PKTKB9cGvbpvE7yxKccvqjvs'
+# )
 
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-}
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+

@@ -1538,11 +1538,6 @@ def ResetPassword(request, signed_token):
 
 
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
 @login_required
 @user_passes_test(is_admin)
 def admin_profile_update(request):
@@ -1550,16 +1545,10 @@ def admin_profile_update(request):
     if request.method == 'POST':
         form = AdminProfileUpdateForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, '✅ Profile updated successfully.')
-                logger.info(f"[Profile Update] Admin ID {user.id} updated successfully.")
-                return redirect('admin_profile')
-            except Exception as e:
-                logger.error(f"[Profile Update Error] Admin ID {user.id} failed to save: {e}", exc_info=True)
-                messages.error(request, '❌ Something went wrong while saving your profile. Check logs for details.')
+            form.save()
+            messages.success(request, '✅ Profile updated successfully.')
+            return redirect('admin_profile')
         else:
-            logger.warning(f"[Profile Update Validation Failed] Admin ID {user.id} - Errors: {form.errors.as_json()}")
             messages.error(request, '❌ Please correct the errors below.')
     else:
         form = AdminProfileUpdateForm(instance=user)
@@ -1567,6 +1556,21 @@ def admin_profile_update(request):
     return render(request, 'admin/profile_update.html', {'form': form})
 
 
+from cloudinary.uploader import upload
+from django.http import JsonResponse
+from django.shortcuts import render
+
+def test_cloudinary_upload(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+        
+        # Upload the file to Cloudinary
+        cloudinary_response = upload(uploaded_file)
+
+        # You can use cloudinary_response['url'] to get the file URL
+        return JsonResponse({'url': cloudinary_response['url']})
+
+    return render(request, 'upload_form.html')  # You can modify this template as per your need
 
 
 
