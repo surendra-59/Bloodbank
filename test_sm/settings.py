@@ -17,18 +17,18 @@ import dj_database_url
 
 
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+# import cloudinary
+# import cloudinary.uploader
+# import cloudinary.api
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
-    'API_KEY': os.environ['CLOUDINARY_API_KEY'],
-    'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
-}
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
+#     'API_KEY': os.environ['CLOUDINARY_API_KEY'],
+#     'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
+# }
 
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
@@ -40,40 +40,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-nj-n#eu$tb8&p(fxs=%z^_&7jr1093hbat*39f4v-oo%5p7l2^'
+SECRET_KEY = 'django-insecure-nj-n#eu$tb8&p(fxs=%z^_&7jr1093hbat*39f4v-oo%5p7l2^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
+DEBUG = True
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+# DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [ ]
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 LOGIN_URL = 'login'  # Replace 'login_page' with the name of your login view
 
 
-# database_url = os.environ.get("DATABASE_URL")
-# DATABASES["default"] = dj_database_url.parse("database_url")
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
-    raise Exception("DATABASE_URL is not set in environment variables!")
-
-DATABASES = {
-    "default": dj_database_url.parse(DATABASE_URL)
-}
-
 # DATABASE_URL = os.environ.get("DATABASE_URL")
-
 # if not DATABASE_URL:
 #     raise Exception("DATABASE_URL is not set in environment variables!")
 
 # DATABASES = {
-#     "default": dj_database_url.parse('postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt')
+#     "default": dj_database_url.parse(DATABASE_URL)
 # }
+
 
 
 # DATABASES = {
@@ -97,8 +87,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'blog',
-    'cloudinary',
-    'cloudinary_storage',
+    # 'cloudinary',
+    # 'cloudinary_storage',
     # 'storages',
 
 ]
@@ -143,16 +133,16 @@ WSGI_APPLICATION = 'test_sm.wsgi.application'
 
 
 # postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'blood_bank',
-#         'USER': 'root',
-#         'PASSWORD': 'suresh',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'blood_bank',
+        'USER': 'root',
+        'PASSWORD': 'suresh',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -237,14 +227,7 @@ MESSAGE_TAGS = {
 }
 
 
-# import cloudinary
-# import os
 
-# cloudinary.config( 
-#   cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
-#   api_key = os.getenv('CLOUDINARY_API_KEY'), 
-#   api_secret = os.getenv('CLOUDINARY_API_SECRET') 
-# )
 
 # import cloudinary
 # import cloudinary.uploader
