@@ -521,25 +521,7 @@ def donor_response(request, request_id):
 
 
 
-# @login_required
-# @user_passes_test(is_donor)
-# def available_blood_requests(request):
-#     available_requests = BloodRequest.objects.filter(
-#         blood_group=request.user.blood_group
-#     ).exclude(
-#         responses__donor=request.user,
-#         responses__is_accepted=True
-#     ).exclude(
-#         responses__donor=request.user,
-#         responses__is_deleted=True
-#     ).exclude(
-#         responses__donor=request.user,
-#         responses__is_saved=True 
-#     )
 
-#     return render(request, "donor/available_blood_requests.html", {
-#         "available_requests": available_requests
-#     })
 @login_required
 @user_passes_test(is_donor)
 def available_blood_requests(request):
@@ -567,88 +549,6 @@ def available_blood_requests(request):
 
 
 
-# @login_required
-# @user_passes_test(is_admin)
-# def save_blood_donation(request, response_id):
-#     with transaction.atomic():
-#         donor_response = DonorResponse.objects.get(id=response_id)
-
-#         if request.method == "POST":
-#             blood_unit_donated = request.POST['blood_unit_donated']
-#             blood_group = donor_response.blood_request.blood_group
-
-#             # Create Blood Donation History
-#             BloodDonationHistory.objects.create(
-#                 donor=donor_response.donor,
-#                 blood_group=blood_group,
-#                 blood_unit_donated=blood_unit_donated
-#             )
-
-#             # Update donation count
-#             donor = donor_response.donor
-#             donor.donation_count = F('donation_count') + 1  # Atomic update
-#             donor.save()
-
-#             # Update Inventory
-#             inventory, created = BloodInventory.objects.get_or_create(
-#                 admin=donor_response.blood_request.admin,
-#                 blood_group=blood_group,
-#                 defaults={'available_units': 0}
-#             )
-#             inventory.available_units += float(blood_unit_donated)
-#             inventory.save()
-
-#             # Remove donor from list
-#             # donor_response.delete()
-#             # Mark the response as saved instead of deleting
-#             donor_response.is_saved = True
-#             donor_response.save()
-
-#             # Redirect
-#             return redirect('view_blood_request', request_id=donor_response.blood_request.id)
-
-#     return render(request, 'admin/blood_donation_form.html', {'donor_response': donor_response})
-# @login_required
-# @user_passes_test(is_admin)
-# def save_blood_donation(request, response_id):
-#     with transaction.atomic():
-#         donor_response = DonorResponse.objects.get(id=response_id)
-
-#         if request.method == "POST":
-#             blood_unit_donated = request.POST['blood_unit_donated']
-#             blood_group = donor_response.blood_request.blood_group
-#             location = donor_response.blood_request.location  # Get the location from the blood request
-
-#             # Create Blood Donation History, including location
-#             BloodDonationHistory.objects.create(
-#                 donor=donor_response.donor,
-#                 blood_group=blood_group,
-#                 blood_unit_donated=blood_unit_donated,
-#                 location=location  # Save the location of the donation
-#             )
-
-#             # Update donation count
-#             donor = donor_response.donor
-#             donor.donation_count = F('donation_count') + 1  # Atomic update
-#             donor.save()
-
-#             # Update Inventory
-#             inventory, created = BloodInventory.objects.get_or_create(
-#                 admin=donor_response.blood_request.admin,
-#                 blood_group=blood_group,
-#                 defaults={'available_units': 0}
-#             )
-#             inventory.available_units += float(blood_unit_donated)
-#             inventory.save()
-
-#             # Mark the response as saved instead of deleting it
-#             donor_response.is_saved = True
-#             donor_response.save()
-
-#             # Redirect
-#             return redirect('view_blood_request', request_id=donor_response.blood_request.id)
-
-#     return render(request, 'admin/blood_donation_form.html', {'donor_response': donor_response})
 @login_required
 @user_passes_test(is_admin)
 def save_blood_donation(request, response_id):
@@ -700,10 +600,14 @@ def save_blood_donation(request, response_id):
 @login_required
 @user_passes_test(is_admin)
 def admin_blood_requests(request):
-    # List all blood requests created by the admin (newest first)
-    blood_requests = BloodRequest.objects.filter(admin=request.user).order_by('-created_at')
+    pending_requests = BloodRequest.objects.filter(admin=request.user, status='pending').order_by('-created_at')
+    processing_requests = BloodRequest.objects.filter(admin=request.user, status='processing').order_by('-created_at')
 
-    return render(request, 'admin/admin_blood_requests.html', {'blood_requests': blood_requests})
+    return render(request, 'admin/admin_blood_requests.html', {
+        'pending_requests': pending_requests,
+        'processing_requests': processing_requests,
+    })
+
 
 
 
@@ -871,22 +775,7 @@ def admin_profile(request):
     }
     return render(request, 'admin/profile_summary.html', context)
 
-# @login_required
-# @user_passes_test(is_admin)
-# def admin_profile_update(request):
-#     user = request.user
-#     if request.method == 'POST':
-#         form = AdminProfileUpdateForm(request.POST, request.FILES, instance=user)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, '✅ Profile updated successfully.')
-#             return redirect('admin_profile')
-#         else:
-#             messages.error(request, '❌ Please correct the errors below.')
-#     else:
-#         form = AdminProfileUpdateForm(instance=user)
 
-#     return render(request, 'admin/profile_update.html', {'form': form})
 
 @login_required
 @user_passes_test(is_admin)
@@ -1169,166 +1058,6 @@ def hospital_delete_request(request, request_id):
     return redirect('hospital_view_requests')
 
 
-
-
-
-
-# # Token expiry in minutes
-# TOKEN_EXPIRY_MINUTES = 15
-
-# def ForgetPassword(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-
-#         try:
-#             user = CustomUser.objects.get(email=email)
-
-#             # Delete any previous reset tokens for this user
-#             PasswordReset.objects.filter(user=user).delete()
-
-#             # Create new reset entry
-#             new_password_reset = PasswordReset(user=user)
-#             new_password_reset.save()
-
-#             # Generate signed token
-#             reset_data = {
-#                 'reset_id': str(new_password_reset.reset_id),
-#                 'timestamp': timezone.now().timestamp()
-#             }
-#             signed_token = signing.dumps(reset_data)
-
-#             # Build URL
-#             password_reset_url = reverse('reset-password', kwargs={'signed_token': signed_token})
-#             full_password_reset_url = f'{request.scheme}://{request.get_host()}{password_reset_url}'
-
-#             # HTML email message
-#             html_message = f"""
-#             <!DOCTYPE html>
-#             <html>
-#             <head>
-#                 <style>
-#                     body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; }}
-#                     .container {{
-#                         max-width: 600px; margin: 20px auto; background: #ffffff;
-#                         padding: 20px; border-radius: 10px;
-#                         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-#                     }}
-#                     h2 {{ color: #007bff; text-align: center; }}
-#                     p {{ font-size: 16px; color: #333; line-height: 1.6; }}
-#                     .button {{
-#                         display: inline-block; padding: 10px 15px;
-#                         color: #fff; background: #28a745; text-decoration: none;
-#                         border-radius: 5px;
-#                     }}
-#                     .footer {{ text-align: center; font-size: 14px; color: #777; margin-top: 20px; }}
-#                 </style>
-#             </head>
-#             <body>
-#                 <div class="container">
-#                     <h2>🔐 Password Reset Request</h2>
-#                     <p>Please use the button below to reset your password:</p>
-#                     <p style="text-align: center;">
-#                         <a href="{full_password_reset_url}" class="button">Reset Password</a>
-#                     </p>
-#                     <p>If you did not request this, you can safely ignore this email.</p>
-#                     <div class="footer">
-#                         <p>Best regards,<br>BloodBank Pvt Ltd</p>
-#                     </div>
-#                 </div>
-#             </body>
-#             </html>
-#             """
-
-#             # Send email
-#             email_message = EmailMessage(
-#                 '🔐 Password Reset Request',
-#                 html_message,
-#                 settings.EMAIL_HOST_USER,
-#                 [email]
-#             )
-#             email_message.content_subtype = "html"
-#             email_message.fail_silently = True
-#             email_message.send()
-
-#         except CustomUser.DoesNotExist:
-#             # Always send the same message to avoid revealing valid emails
-#             pass
-
-#         messages.success(request, "If the email exists in our system, a password reset link has been sent.")
-#         return redirect('password-reset-sent')
-
-#     return render(request, 'forget.html')
-
-
-# def PasswordResetSent(request):
-#     return render(request, 'password-reset-sent.html')
-
-
-# from django.core.exceptions import BadRequest
-# from django.contrib import messages
-# from django.shortcuts import render, redirect
-# from django.core.signing import BadSignature, SignatureExpired, loads
-# from django.utils import timezone
-# from .models import PasswordReset, CustomUser
-
-# def ResetPassword(request, signed_token):
-#     try:
-#         # Decode and verify token
-#         if not signed_token:
-#             raise BadRequest("No token provided.")
-        
-#         # Attempt to decode the token
-#         reset_data = loads(signed_token, max_age=TOKEN_EXPIRY_MINUTES * 60)  # Make sure TOKEN_EXPIRY_MINUTES is defined
-#         reset_id = reset_data.get('reset_id')
-
-#         if not reset_id:
-#             raise BadRequest("Invalid reset ID in the token.")
-        
-#         # Get the reset entry based on the reset_id
-#         password_reset_entry = PasswordReset.objects.get(reset_id=reset_id)
-        
-#         if not password_reset_entry:
-#             raise BadRequest("No password reset entry found.")
-
-#         # Handle form submission to reset the password
-#         if request.method == "POST":
-#             password = request.POST.get('password')
-#             confirm_password = request.POST.get('confirm_password')
-
-#             if password != confirm_password:
-#                 messages.error(request, 'Passwords do not match.')
-#             elif len(password) < 5:
-#                 messages.error(request, 'Password must be at least 5 characters long.')
-#             else:
-#                 user = password_reset_entry.user
-#                 user.set_password(password)
-#                 user.save()
-
-#                 # Delete the reset entry after success
-#                 password_reset_entry.delete()
-
-#                 messages.success(request, 'Password reset successful. You can now log in.')
-#                 return redirect('login')
-
-#             return redirect('reset-password', signed_token=signed_token)
-
-#     except (BadSignature, SignatureExpired):
-#         # These exceptions are thrown if the token is expired or invalid
-#         messages.error(request, 'The password reset link is invalid or expired.')
-#         return redirect('forget-password')
-#     except PasswordReset.DoesNotExist:
-#         messages.error(request, 'Invalid reset request.')
-#         return redirect('forget-password')
-#     except BadRequest as e:
-#         # Handle case where token is malformed or missing
-#         messages.error(request, str(e))
-#         return redirect('forget-password')
-#     except Exception as e:
-#         # Generic exception handler to capture unforeseen issues
-#         messages.error(request, f"An error occurred: {str(e)}")
-#         return redirect('forget-password')
-
-#     return render(request, 'reset-password.html')
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
