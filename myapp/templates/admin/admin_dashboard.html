@@ -1,12 +1,52 @@
 {% extends 'admin/admin_base.html' %}
+
 {% block content %}
-    <h2>Admin Dashboard</h2>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+        <h2 class="mb-3 text-center fw-bold">Admin Dashboard</h2>
+        <p class="text-center text-muted mb-4">
+            Welcome, Admin! Use the options below to manage hospital approvals, blood requests, and inventory.
+        </p>
+        
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'pending_hospitals' %}" class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-hospital-user me-2"></i> Approve Hospital's account
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'admin_blood_requests' %}" class="btn btn-outline-danger w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-hand-holding-medical me-2"></i> Manage Requests
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'admin_manage_hospital_requests' %}" class="btn btn-outline-warning w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-briefcase-medical me-2"></i> Manage Hospital Requests
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'blood_inventory' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-tint me-2"></i> Blood Inventory
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'request_blood' %}" class="btn btn-outline-info w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-burn me-2"></i> Request Blood
+                </a>
+            </div>
 
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'donor_list' %}" class="btn btn-outline-info w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-burn me-2"></i> Donors History
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'hospital_delivery_summary' %}" class="btn btn-outline-info w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-burn me-2"></i> Hospitals History
+                </a>
+            </div>
 
-    <p>Welcome, Admin! Manage hospital approvals and blood requests here.</p>
-    <a href="{% url 'pending_hospitals' %}" class="btn btn-primary">View Pending Hospital Approvals</a>
-    <a href="{% url 'admin_blood_requests' %}" class="btn btn-warning">Admin Blood Request</a>
-    <a href="{% url 'admin_manage_hospital_requests' %}" class="btn btn-warning">Hospital Blood Request</a>
-
-    <a href="{% url 'blood_inventory' %}" class="btn btn-warning">Blood Inventory</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

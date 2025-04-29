@@ -84,10 +84,15 @@ urlpatterns = [
     path('admin/hospital-request/<int:request_id>/delivered/', views.admin_mark_delivered, name='admin_mark_delivered'),
     path('admin/hospital-request/<int:request_id>/failed/', views.admin_mark_failed, name='admin_mark_failed'),
 
-    # password reset
 
-    # urls.py
-    path('test-upload/', views.test_cloudinary_upload, name='test_upload'),
+
+    # donation history in admin pannel
+    path('donors/', views.DonorListView.as_view(), name='donor_list'),
+    path('donor/<int:donor_id>/history/', views.donor_history, name='donor_history'),
+
+    path('delivered/hospitals/', views.HospitalDeliverySummaryView.as_view(), name='hospital_delivery_summary'),
+    path('delivered/hospital/<int:hospital_id>/', views.HospitalDeliveryDetailView.as_view(), name='hospital_delivery_detail'),
+
 
 
  ]

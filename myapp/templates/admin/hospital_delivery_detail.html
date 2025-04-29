@@ -1,0 +1,40 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-danger">Delivery History: {{ hospital.organization_name }}</h3>
+    <p>Email: {{ hospital.email }} | Contact: {{ hospital.contact_number }}</p>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-danger">
+                <tr>
+                    <th>#</th>
+                    <th>Blood Group</th>
+                    <th>Units Requested</th>
+                    <th>Units Approved</th>
+                    <th>Address</th>
+                    <th>Delivered On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in deliveries %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ d.blood_group }}</td>
+                    <td>{{ d.units_requested }}</td>
+                    <td>{{ d.units_approved }}</td>
+                    <!-- <td>{{ d.address }}</td> -->
+                    <td style="word-break: break-word; max-width: 150px;">{{ d.address }}</td>
+                    <td>{{ d.delivered_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No delivery records found for this hospital.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'hospital_delivery_summary' %}" class="btn btn-secondary mt-3">Back to Summary</a>
+</div>
+{% endblock %}

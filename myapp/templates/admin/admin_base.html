@@ -13,38 +13,96 @@
 
     <!-- Default or shared styles can go here -->
     {% endblock %}
+
+<style>
+/* Sleek black and blue gradient navbar */
+.custom-navbar {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Black-Blue gradient */
+    padding: 0.4rem 1rem;
+    font-size: 0.92rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.custom-navbar .navbar-brand {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #ffffff;
+}
+
+.custom-navbar .nav-link {
+    color: #d1dfff;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+}
+
+.custom-navbar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.custom-navbar .nav-link.text-danger:hover {
+    background-color: rgba(255, 77, 77, 0.1);
+    color: #ffffff !important
+}
+
+.navbar-toggler {
+    background-color: #fff;
+    border-radius: 6px;
+}
+</style>
+
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg custom-navbar">
+
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Blood Bank Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fas fa-tint me-2 text-danger"></i>
+                Blood Bank Admin
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <!-- Left-aligned nav items -->
+                <ul class="navbar-nav me-auto gap-2">
+
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Dashboard</a>
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-chart-line me-1"></i> Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        <a class="nav-link" href="{% url 'admin_profile' %}">
+                            <i class="fas fa-user-circle me-1"></i> Profile
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_list' %}">
+                            <i class="fas fa-users me-1"></i> User List
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin_profile' %}">Profile</a>
+                        <a class="nav-link" href="{% url 'add_user' %}">
+                            <i class="fas fa-user-plus me-1"></i> Add User
+                        </a>
                     </li>
+                </ul>
+
+                <!-- Right-aligned logout -->
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pending_hospitals' %}">Pending Approvals</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'request_blood' %}">Blood Requests</a>    
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user_list' %}">User List</a> <!-- Added link to User List -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_user' %}">Add User</a> <!-- Added Add User link -->
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link text-danger" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
                     </li>
                 </ul>
             </div>

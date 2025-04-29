@@ -64,7 +64,7 @@
                             <td>{{ request.created_at }}</td>
                             <td>
                                 <div class="btn-group" role="group" style="gap: 5px;">
-                                    <a href="{% url 'view_blood_request' request.id %}" class="btn btn-primary btn-sm">View</a>
+                                    <!-- <a href="{% url 'view_blood_request' request.id %}" class="btn btn-primary btn-sm">View</a> -->
                                     <form method="POST" action="{% url 'delete_blood_request' request.id %}" class="d-inline">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger btn-sm" 

@@ -1,0 +1,41 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h4>Donation History for {{ donor.first_name }} {{ donor.last_name }}</h4>
+    <p><strong>Email:</strong> {{ donor.email }}</p>
+    <p><strong>Contact:</strong> {{ donor.contact_number }}</p>
+    <p><strong>Total Donations:</strong> {{ donor.donation_count }}</p>
+
+    <hr>
+    <h5>Donation Records</h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered mt-3">
+            <thead class="table-danger">
+                <tr>
+                    <th>#</th>
+                    <th>Blood Group</th>
+                    <th>Units Donated</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.blood_group }}</td>
+                    <td>{{ item.blood_unit_donated }}</td>
+                    <td>{{ item.location }}</td>
+                    <td>{{ item.donation_date|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No donation records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'donor_list' %}" class="btn btn-secondary mt-3">Back to Donor List</a>
+</div>
+{% endblock %}

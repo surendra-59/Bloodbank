@@ -31,13 +31,13 @@
                             <td>{{ request.blood_group }}</td>
                             <td>{{ request.units_requested }}</td>
                             <td>{{ request.contact_number }}</td>
-                            <td>{{ request.address }}</td>
-                            <td>
-                                <!-- Accept Button triggers Modal -->
-                                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#acceptModal{{ request.id }}">Accept</button>
+                            <td style="word-break: break-word; max-width: 150px;">{{ request.address }}</td>
 
-                                <!-- Reject Button -->
-                                <a href="{% url 'admin_reject_request' request.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to reject this request?')">Reject</a>
+                            <td style="white-space: nowrap;">
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#acceptModal{{ request.id }}">Accept</button>
+                                    <a href="{% url 'admin_reject_request' request.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to reject this request?')">Reject</a>
+                                </div>
                             </td>
                         </tr>
 
@@ -97,7 +97,7 @@
                             <td>{{ request.blood_group }}</td>
                             <td>{{ request.units_approved }}</td>
                             <td>{{ request.contact_number }}</td>
-                            <td>{{ request.address }}</td>
+                            <td style="word-break: break-word; max-width: 150px;">{{ request.address }}</td>
                             <td>
                                 <a href="{% url 'admin_mark_delivered' request.id %}" class="btn btn-success btn-sm">Delivered</a>
                                 <a href="{% url 'admin_mark_failed' request.id %}" class="btn btn-warning btn-sm">Failed</a>

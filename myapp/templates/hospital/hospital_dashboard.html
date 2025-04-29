@@ -1,14 +1,23 @@
 {% extends 'hospital/hospital_base.html' %}
 
 {% block content %}
-    <h2>Hospital Dashboard</h2>
-    
-    <p>Welcome to your dashboard. Here you can view and request blood.</p>
-
-    <!-- Button to Request Blood -->
-    <a href="{% url 'hospital_request_blood' %}" class="btn btn-primary">Request Blood</a>
-
-    <!-- Button to View Blood Requests Status -->
-    <a href="{% url 'hospital_view_requests' %}" class="btn btn-info">View Blood Requests</a>
-
+<div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+        <h2 class="mb-3 text-center fw-bold">Hospital Dashboard</h2>
+        <p class="text-center text-muted mb-4">Welcome! From here, you can request blood or track your existing requests.</p>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'hospital_request_blood' %}" class="btn btn-outline-danger w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-hand-holding-droplet me-2"></i> Request Blood
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'hospital_view_requests' %}" class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm fw-semibold">
+                    <i class="fas fa-clipboard-list me-2"></i> View Blood Requests
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

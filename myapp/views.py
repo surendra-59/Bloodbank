@@ -36,7 +36,22 @@ from django.conf import settings
 from django.utils import timezone
 from django.core import signing
 from django.core.signing import BadSignature, SignatureExpired, loads
+
+from django.contrib.auth import logout
 # import datetime
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.urls import reverse
+from django.utils import timezone
+from django.core import signing
+from django.conf import settings
+
+from .models import CustomUser, PasswordReset  # Adjust this as per your actual app
+from django.core.signing import BadSignature, SignatureExpired
+
+TOKEN_EXPIRY_MINUTES = 15  # Token valid for 15 minutes
 
 
 #forms
@@ -132,35 +147,9 @@ def is_donor(user):
 def is_hospital(user):
     return user.is_authenticated and user.user_type == "2"
 
-# @login_required
-# def home(request):
-#     if request.user.user_type == "1":
-#         updated_count = update_ages()
-#         # messages.success(request, f"Age updated for {updated_count} users.")
-#         return redirect("admin_dashboard")
 
-#     elif request.user.user_type == "2":
-#         return redirect("hospital_dashboard")  
-#     elif request.user.user_type == "3":
-#         return redirect("donor_dashboard")  
-#     else:
-#         messages.error(request, "Invalid user type.")
-#         return redirect("login")  # Redirect to login if user type is unknown
-from django.contrib.auth import logout
 
-# @login_required
-# def home(request):
-#     posts = BlogPost.objects.all().order_by('-created_at')
 
-#     if request.user.user_type == "1":
-#         return render(request, "admin/home.html", {'posts': posts})
-#     elif request.user.user_type == "2":
-#         return render(request, "hospital/home.html", {'posts': posts})
-#     elif request.user.user_type == "3":
-#         return render(request, "donor/home.html", {'posts': posts})
-#     else:
-#         logout(request)  # Optional: log them out to prevent weird states
-#         return redirect("login")  # Redirect to login if user_type is invalid
 
 @login_required
 def home(request):
@@ -940,6 +929,7 @@ def admin_mark_delivered(request, request_id):
 
     if blood_request.status == 'processing':
         blood_request.status = 'delivered'
+        blood_request.delivered_at = timezone.now() 
         blood_request.save()
 
         messages.success(request, "Request marked as delivered.")
@@ -1058,21 +1048,6 @@ def hospital_delete_request(request, request_id):
     return redirect('hospital_view_requests')
 
 
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.core.mail import EmailMessage
-from django.urls import reverse
-from django.utils import timezone
-from django.core import signing
-from django.conf import settings
-
-from .models import CustomUser, PasswordReset  # Adjust this as per your actual app
-from django.core.signing import BadSignature, SignatureExpired
-
-TOKEN_EXPIRY_MINUTES = 15  # Token valid for 15 minutes
-
-
 def ForgetPassword(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -1120,10 +1095,7 @@ def ForgetPassword(request):
                         color: #333;
                         line-height: 1.6;
                     }}
-                    .highlight {{
-                        font-weight: bold;
-                        color: #d9534f;
-                    }}
+
                     .footer {{
                         text-align: center;
                         font-size: 14px;
@@ -1145,13 +1117,8 @@ def ForgetPassword(request):
                 <div class="container">
                     <h2>🔐 Password Reset Request</h2>
                     
-                    <p>Hello dear teammate,</p>
-
-                    <p>I am <strong>Surendra Raj Bisht</strong>. First, I want to express my gratitude for checking whether this <span class="highlight">Forget Password</span> function works as expected.</p>
-
-                    <p style="background-color:yellow;">I am very thankful for viewing this project.</p>
-                    <p>Your role is crucial in making the system more efficient. I request you to design the <span class="highlight">frontend template</span> to make it visually appealing and highly interactive</p>
-                    
+                    <p>Hello user,</p>
+ 
                     <p>Please use the button below to reset your password:</p>
 
                     <p style="text-align: center;">
@@ -1189,40 +1156,6 @@ def ForgetPassword(request):
 def PasswordResetSent(request):
     return render(request, 'password-reset-sent.html')
 
-# def ResetPassword(request, signed_token):
-#     try:
-#         # Validate and decode the signed token
-#         reset_data = signing.loads(signed_token, max_age=TOKEN_EXPIRY_MINUTES * 60)
-#         reset_id = reset_data.get('reset_id')
-
-#         password_reset_entry = PasswordReset.objects.get(reset_id=reset_id)
-
-#         if request.method == "POST":
-#             password = request.POST.get('password')
-#             confirm_password = request.POST.get('confirm_password')
-
-#             if password != confirm_password:
-#                 messages.error(request, 'Passwords do not match')
-#             elif len(password) < 5:
-#                 messages.error(request, 'Password must be at least 5 characters long')
-#             else:
-#                 user = password_reset_entry.user
-#                 user.set_password(password)
-#                 user.save()
-
-#                 # Remove used reset entry
-#                 password_reset_entry.delete()
-
-#                 messages.success(request, 'Password reset successfully. You can now log in.')
-#                 return redirect('login')
-
-#             return redirect('reset-password', signed_token=signed_token)
-
-#     except (BadSignature, SignatureExpired, PasswordReset.DoesNotExist):
-#         messages.error(request, 'Invalid or expired reset link')
-#         return redirect('forget-password')
-
-#     return render(request, 'reset-password.html')
 
 def ResetPassword(request, signed_token):
     try:
@@ -1285,21 +1218,73 @@ def admin_profile_update(request):
     return render(request, 'admin/profile_update.html', {'form': form})
 
 
-from cloudinary.uploader import upload
-from django.http import JsonResponse
-from django.shortcuts import render
 
-def test_cloudinary_upload(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        uploaded_file = request.FILES['file']
-        
-        # Upload the file to Cloudinary
-        cloudinary_response = upload(uploaded_file)
 
-        # You can use cloudinary_response['url'] to get the file URL
-        return JsonResponse({'url': cloudinary_response['url']})
+# Donation history in admin panel
 
-    return render(request, 'upload_form.html')  # You can modify this template as per your need
+class DonorListView(LoginRequiredMixin, ListView):
+    model = CustomUser
+    template_name = 'admin/donor_list.html'
+    context_object_name = 'donors'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        donors = CustomUser.objects.filter(user_type="3", donation_count__gt=0)
+
+        if query:
+            donors = donors.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(email__icontains=query) |
+                Q(contact_number__icontains=query)
+            )
+
+        return donors
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context
+
+def donor_history(request, donor_id):
+    donor = get_object_or_404(CustomUser, id=donor_id)
+    history = BloodDonationHistory.objects.filter(donor=donor).order_by('-donation_date')
+    return render(request, 'admin/donor_history.html', {'donor': donor, 'history': history})
+
+
+class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
+    def get(self, request):
+        query = request.GET.get('q', '')
+
+        # Get hospitals that have at least one delivered request
+        delivered_hospital_ids = HospitalBloodRequest.objects.filter(status='delivered') \
+            .values_list('hospital_id', flat=True).distinct()
+
+        hospitals = CustomUser.objects.filter(id__in=delivered_hospital_ids, user_type="2")
+
+        if query:
+            hospitals = hospitals.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(email__icontains=query)
+            )
+
+        return render(request, 'admin/hospital_delivery_summary.html', {
+            'hospitals': hospitals,
+            'query': query
+        })
+
+
+# Detail History for One Hospital
+class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
+    def get(self, request, hospital_id):
+        hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
+        deliveries = HospitalBloodRequest.objects.filter(hospital=hospital, status='delivered').order_by('-updated_at')
+
+        return render(request, 'admin/hospital_delivery_detail.html', {
+            'hospital': hospital,
+            'deliveries': deliveries
+        })
 
 
 

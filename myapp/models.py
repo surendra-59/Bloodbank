@@ -169,14 +169,6 @@ class BloodInventory(models.Model):
         return f"{self.admin.username} - {self.blood_group} - {self.available_units} units"
 
 
-
-# class AcceptedDonor(models.Model):
-#     blood_request = models.ForeignKey(BloodRequest, on_delete=models.CASCADE)
-#     donor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, limit_choices_to={'user_type': "3"})
-#     is_donation_completed = models.BooleanField(default=False)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-
 # Hospital:
 from django.db import models
 from .models import CustomUser
@@ -225,6 +217,7 @@ class HospitalBloodRequest(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    delivered_at = models.DateTimeField(null=True, blank=True) # delivered time
 
     def __str__(self):
         return f"{self.hospital_name_snapshot or 'Unknown Hospital'} - {self.blood_group} - {self.status}"
