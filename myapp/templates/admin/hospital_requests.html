@@ -99,10 +99,36 @@
                             <td>{{ request.contact_number }}</td>
                             <td style="word-break: break-word; max-width: 150px;">{{ request.address }}</td>
                             <td>
-                                <a href="{% url 'admin_mark_delivered' request.id %}" class="btn btn-success btn-sm">Delivered</a>
+                                <!-- Delivered Button triggers Modal -->
+                                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#deliveredModal{{ request.id }}">Delivered</button>
+
+                                <!-- Failed Button -->
                                 <a href="{% url 'admin_mark_failed' request.id %}" class="btn btn-warning btn-sm">Failed</a>
                             </td>
                         </tr>
+
+                        <!-- Delivered Modal for each request -->
+                        <div class="modal fade" id="deliveredModal{{ request.id }}" tabindex="-1" aria-labelledby="deliveredModalLabel{{ request.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form method="POST" action="{% url 'admin_mark_delivered' request.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deliveredModalLabel{{ request.id }}">Delivery Confirmation</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label for="delivered_by">Delivered By:</label>
+                                            <input type="text" name="delivered_by" class="form-control" required placeholder="Enter delivery person's name">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Confirm Delivery</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>

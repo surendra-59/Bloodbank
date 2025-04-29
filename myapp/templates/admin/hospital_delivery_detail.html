@@ -13,6 +13,7 @@
                     <th>Units Requested</th>
                     <th>Units Approved</th>
                     <th>Address</th>
+                    <th>Delivered by</th>
                     <th>Delivered On</th>
                 </tr>
             </thead>
@@ -23,8 +24,8 @@
                     <td>{{ d.blood_group }}</td>
                     <td>{{ d.units_requested }}</td>
                     <td>{{ d.units_approved }}</td>
-                    <!-- <td>{{ d.address }}</td> -->
                     <td style="word-break: break-word; max-width: 150px;">{{ d.address }}</td>
+                    <td style="word-break: break-word; max-width: 100px;">{{ d.delivered_by }}</td>
                     <td>{{ d.delivered_at|date:"M d, Y H:i" }}</td>
                 </tr>
                 {% empty %}

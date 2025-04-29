@@ -209,6 +209,8 @@ class HospitalBloodRequest(models.Model):
     blood_group = models.CharField(max_length=4, choices=CustomUser.BLOOD_GROUPS)
     units_requested = models.FloatField()
     units_approved = models.FloatField(null=True, blank=True)
+    delivered_by = models.CharField(max_length=100, null=True, blank=True)
+
 
     address = models.TextField()
     contact_number = models.CharField(max_length=15)
@@ -221,6 +223,16 @@ class HospitalBloodRequest(models.Model):
 
     def __str__(self):
         return f"{self.hospital_name_snapshot or 'Unknown Hospital'} - {self.blood_group} - {self.status}"
+
+    def save(self, *args, **kwargs):
+        # If a hospital is assigned, update snapshot fields
+        if self.hospital:
+            self.hospital_name_snapshot = self.hospital.organization_name
+            self.hospital_email_snapshot = self.hospital.email
+            self.hospital_contact_snapshot = self.hospital.contact_number
+            self.hospital_address_snapshot = self.hospital.address
+
+        super().save(*args, **kwargs)
 
 
 

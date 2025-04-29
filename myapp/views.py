@@ -928,8 +928,14 @@ def admin_mark_delivered(request, request_id):
     # Inventory deduction is already handled during acceptance, so no need to deduct again.
 
     if blood_request.status == 'processing':
+        delivered_by = request.POST.get('delivered_by', '').strip()
+        if not delivered_by:
+            messages.error(request, "Please provide the delivery person's name.")
+            return redirect('admin_manage_hospital_requests')
+
         blood_request.status = 'delivered'
-        blood_request.delivered_at = timezone.now() 
+        blood_request.delivered_at = timezone.now()
+        blood_request.delivered_by = delivered_by
         blood_request.save()
 
         messages.success(request, "Request marked as delivered.")
@@ -1260,7 +1266,8 @@ class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
         delivered_hospital_ids = HospitalBloodRequest.objects.filter(status='delivered') \
             .values_list('hospital_id', flat=True).distinct()
 
-        hospitals = CustomUser.objects.filter(id__in=delivered_hospital_ids, user_type="2")
+        hospitals = HospitalBloodRequest.objects.filter(id__in=delivered_hospital_ids)
+
 
         if query:
             hospitals = hospitals.filter(
