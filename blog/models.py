@@ -4,7 +4,7 @@ from django.utils import timezone
 from myapp.models import CustomUser
 
 
-# from cloudinary.models import CloudinaryField
+from cloudinary.models import CloudinaryField
 
 # ---------------------------
 # Blog Post Model (Supports Reposts)
