@@ -207,7 +207,12 @@ class UserListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('q', '')  # Get search input
-        users = CustomUser.objects.filter(user_type__in=[2, 3])
+        # Separate filters for hospital and donor
+        hospitals = CustomUser.objects.filter(user_type=2, is_approved=True)
+        donors = CustomUser.objects.filter(user_type=3)
+
+        # Combine both querysets
+        users = hospitals.union(donors)
 
         if query:
             users = users.filter(
@@ -538,6 +543,51 @@ def available_blood_requests(request):
 
 
 
+# @login_required
+# @user_passes_test(is_admin)
+# def save_blood_donation(request, response_id):
+#     with transaction.atomic():
+#         donor_response = DonorResponse.objects.get(id=response_id)
+
+#         if request.method == "POST":
+#             blood_unit_donated = request.POST['blood_unit_donated']
+#             blood_group = donor_response.blood_request.blood_group
+#             location = donor_response.blood_request.location
+
+#             # 🛑 Avoid duplicate history entry
+#             history_exists = BloodDonationHistory.objects.filter(
+#                 donor=donor_response.donor,
+#                 blood_group=blood_group,
+#                 location=location
+#             ).exists()
+
+#             if not history_exists:
+#                 BloodDonationHistory.objects.create(
+#                     donor=donor_response.donor,
+#                     blood_group=blood_group,
+#                     blood_unit_donated=blood_unit_donated,
+#                     location=location
+#                 )
+
+#                 donor = donor_response.donor
+#                 donor.donation_count = F('donation_count') + 1
+#                 donor.save()
+
+#                 inventory, created = BloodInventory.objects.get_or_create(
+#                     admin=donor_response.blood_request.admin,
+#                     blood_group=blood_group,
+#                     defaults={'available_units': 0}
+#                 )
+#                 inventory.available_units += float(blood_unit_donated)
+#                 inventory.save()
+
+#             donor_response.is_saved = True
+#             donor_response.save()
+
+#             return redirect('view_blood_request', request_id=donor_response.blood_request.id)
+
+#     return render(request, 'admin/blood_donation_form.html', {'donor_response': donor_response})
+
 @login_required
 @user_passes_test(is_admin)
 def save_blood_donation(request, response_id):
@@ -549,15 +599,12 @@ def save_blood_donation(request, response_id):
             blood_group = donor_response.blood_request.blood_group
             location = donor_response.blood_request.location
 
-            # 🛑 Avoid duplicate history entry
-            history_exists = BloodDonationHistory.objects.filter(
-                donor=donor_response.donor,
-                blood_group=blood_group,
-                location=location
-            ).exists()
+            # ✅ Check if history already created for this specific response
+            history_exists = BloodDonationHistory.objects.filter(donor_response=donor_response).exists()
 
             if not history_exists:
                 BloodDonationHistory.objects.create(
+                    donor_response=donor_response,
                     donor=donor_response.donor,
                     blood_group=blood_group,
                     blood_unit_donated=blood_unit_donated,
@@ -582,6 +629,7 @@ def save_blood_donation(request, response_id):
             return redirect('view_blood_request', request_id=donor_response.blood_request.id)
 
     return render(request, 'admin/blood_donation_form.html', {'donor_response': donor_response})
+
 
 
 

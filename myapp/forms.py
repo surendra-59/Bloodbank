@@ -184,6 +184,9 @@ class HospitalProfileUpdateForm(forms.ModelForm):
             'contact_number': forms.TextInput(attrs={'class': 'form-control'}),
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['identity'].required = True
 
 
 
