@@ -4,17 +4,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
 from datetime import date
-
 from django.db.models import Q
-
-
-# from django.contrib.auth import get_user_model
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
-
 from django.core.validators import MinValueValidator
 
-from cloudinary.models import CloudinaryField
+# from cloudinary.models import CloudinaryField
 
 
 
@@ -66,16 +59,12 @@ class CustomUser(AbstractUser):
     is_approved = models.BooleanField(default=False)  # New field for staff approval
     user_type = models.CharField(default="3", choices=USER_TYPE, max_length=3)
     gender = models.CharField(max_length=1, choices=GENDER,null=True,blank=True)
-    # profile_pic = models.ImageField(null=True, blank=True)
-    profile_pic = CloudinaryField('image', blank=True, null=True)
+    profile_pic = models.ImageField(null=True, blank=True)
+    # profile_pic = CloudinaryField('image', blank=True, null=True)
     dob = models.DateField(null=True, blank=True)
     blood_group = models.CharField(max_length=4, choices=BLOOD_GROUPS,null=True,blank=True)
     contact_number = models.CharField(max_length=15, null=True, blank=True)
-    # identity = models.ImageField(null=True,blank=True)
-
-
-
-    identity = CloudinaryField('identity', null=True, blank=True)
+    identity = models.ImageField(null=True,blank=True)
 
     organization_name = models.CharField(max_length=80, null=True,blank=True)
     address = models.TextField(null=True,blank=True)
