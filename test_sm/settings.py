@@ -43,7 +43,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-nj-n#eu$tb8&p(fxs=%z^_&7jr1093hbat*39f4v-oo%5p7l2^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
+# DEBUG = True
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -64,6 +64,11 @@ DATABASES = {
     "default": dj_database_url.parse(DATABASE_URL)
 }
 
+
+# DATABASE_URL = "postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt"
+# DATABASES = {
+#     "default": dj_database_url.parse(DATABASE_URL)
+# }
 
 
 # DATABASES = {
