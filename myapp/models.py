@@ -139,7 +139,8 @@ class DonorResponse(models.Model):
 
 
 class BloodDonationHistory(models.Model):
-    donor_response = models.OneToOneField('DonorResponse', on_delete=models.CASCADE)  # New
+    # donor_response = models.OneToOneField('DonorResponse', on_delete=models.CASCADE)  # New
+    donor_response = models.OneToOneField('DonorResponse', on_delete=models.SET_NULL,null=True,blank=True)
     donor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, limit_choices_to={'user_type': "3"})
     blood_group = models.CharField(max_length=4, choices=CustomUser.BLOOD_GROUPS)
     blood_unit_donated = models.FloatField()

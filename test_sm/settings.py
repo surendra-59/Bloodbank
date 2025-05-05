@@ -100,7 +100,17 @@ WSGI_APPLICATION = 'test_sm.wsgi.application'
 
 
 
-#
+# postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'blood_bank',
+        'USER': 'root',
+        'PASSWORD': 'suresh',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
