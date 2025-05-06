@@ -21,6 +21,7 @@
                             <th>Units Requested</th>
                             <th>Contact</th>
                             <th>Address</th>
+                            <th>Requested at</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -32,6 +33,7 @@
                             <td>{{ request.units_requested }}</td>
                             <td>{{ request.contact_number }}</td>
                             <td style="word-break: break-word; max-width: 150px;">{{ request.address }}</td>
+                            <td>{{ request.created_at|date:"M d, Y H:i" }}</td>
 
                             <td style="white-space: nowrap;">
                                 <div class="d-flex flex-wrap gap-1">
@@ -87,6 +89,7 @@
                             <th>Units Approved</th>
                             <th>Contact</th>
                             <th>Address</th>
+                            <th>Accepted at</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -98,6 +101,7 @@
                             <td>{{ request.units_approved }}</td>
                             <td>{{ request.contact_number }}</td>
                             <td style="word-break: break-word; max-width: 150px;">{{ request.address }}</td>
+                            <td>{{ request.accepted_at|date:"M d, Y H:i" }}</td>
                             <td>
                                 <!-- Delivered Button triggers Modal -->
                                 <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#deliveredModal{{ request.id }}">Delivered</button>

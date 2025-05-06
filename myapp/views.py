@@ -943,6 +943,7 @@ def admin_accept_request(request, request_id):
             # Update request status and approved units
             blood_request.admin = request.user
             blood_request.units_approved = approved_units
+            blood_request.accepted_at = timezone.now()
             blood_request.status = 'processing'
             blood_request.save()
 
@@ -960,6 +961,7 @@ def admin_reject_request(request, request_id):
 
     blood_request = get_object_or_404(HospitalBloodRequest, id=request_id)
     blood_request.status = 'rejected'
+    blood_request.rejected_at = timezone.now()
     blood_request.save()
 
     messages.info(request, "Request rejected.")
@@ -1014,6 +1016,7 @@ def admin_mark_failed(request, request_id):
 
         # Mark the request as failed
         blood_request.status = 'failed'
+        blood_request.failed_at = timezone.now()
         blood_request.save()
 
         messages.warning(request, "Request marked as failed. Blood units have been returned to inventory.")
@@ -1306,28 +1309,6 @@ def donor_history(request, donor_id):
     return render(request, 'admin/donor_history.html', {'donor': donor, 'history': history})
 
 
-# class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
-#     def get(self, request):
-#         query = request.GET.get('q', '')
-
-#         # Get hospitals that have at least one delivered request
-#         delivered_hospital_ids = HospitalBloodRequest.objects.filter(status='delivered') \
-#             .values_list('hospital_id', flat=True).distinct()
-
-#         hospitals = HospitalBloodRequest.objects.filter(id__in=delivered_hospital_ids)
-
-
-#         if query:
-#             hospitals = hospitals.filter(
-#                 Q(first_name__icontains=query) |
-#                 Q(last_name__icontains=query) |
-#                 Q(email__icontains=query)
-#             )
-
-#         return render(request, 'admin/hospital_delivery_summary.html', {
-#             'hospitals': hospitals,
-#             'query': query
-#         })
 
 class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
     def get(self, request):
