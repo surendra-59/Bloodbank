@@ -90,10 +90,9 @@ urlpatterns = [
     path('donors/', views.DonorListView.as_view(), name='donor_list'),
     path('donor/<int:donor_id>/history/', views.donor_history, name='donor_history'),
 
+
     path('delivered/hospitals/', views.HospitalDeliverySummaryView.as_view(), name='hospital_delivery_summary'),
-    path('delivered/hospital/<int:hospital_id>/', views.HospitalDeliveryDetailView.as_view(), name='hospital_delivery_detail'),
-
-
+    path('delivered/hospital/<str:hospital_email>/', views.HospitalDeliveryDetailView.as_view(), name='hospital_delivery_detail'),
 
  ]
 
