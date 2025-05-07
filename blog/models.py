@@ -11,8 +11,8 @@ from cloudinary.models import CloudinaryField
 class BlogPost(models.Model):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='blog_posts')
     caption = models.TextField(verbose_name="Caption / Description", blank=True)
-    # image = models.ImageField(upload_to='blog/images/', null=True, blank=True)
-    image = CloudinaryField('image', null=True, blank=True)
+    image = models.ImageField(upload_to='blog/images/', null=True, blank=True)
+    # image = CloudinaryField('image', null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     # 🔁 Internal Share (repost)
