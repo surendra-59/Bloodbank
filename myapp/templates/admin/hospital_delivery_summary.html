@@ -28,7 +28,7 @@
                     <td>{{ hospital.hospital_contact_snapshot }}</td>
                     <td style="word-break: break-word; max-width: 100px;">{{ hospital.hospital_address_snapshot }}</td>
                     <td>
-                        <a href="{% url 'hospital_delivery_detail' hospital.hospital__id %}" class="btn btn-outline-danger btn-sm">
+                        <a href="{% url 'hospital_delivery_detail' hospital.hospital_email_snapshot %}" class="btn btn-outline-danger btn-sm">
                             View
                         </a>
                     </td>
