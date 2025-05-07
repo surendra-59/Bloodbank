@@ -1,8 +1,8 @@
 {% extends 'admin/admin_base.html' %}
 {% block content %}
 <div class="container mt-4">
-    <h3 class="text-danger">Delivery History: {{ hospital.organization_name }}</h3>
-    <p>Email: {{ hospital.email }} | Contact: {{ hospital.contact_number }}</p>
+    <h3 class="text-danger">Delivery History: {{ deliveries.0.hospital_name_snapshot }}</h3>
+    <p>Email: {{ deliveries.0.hospital_email_snapshot }} | Contact: {{ deliveries.0.hospital_contact_snapshot }}</p>
 
     <div class="table-responsive mt-3">
         <table class="table table-bordered table-hover align-middle">
