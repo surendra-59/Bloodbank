@@ -1324,6 +1324,44 @@ def donor_history(request, donor_id):
 
 
 
+# class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
+#     def get(self, request):
+#         query = request.GET.get('q', '')
+
+#         # Get delivered requests
+#         delivered_requests = HospitalBloodRequest.objects.filter(status='delivered')
+
+#         # Filter by query (on snapshot fields, since hospital may be deleted)
+#         if query:
+#             delivered_requests = delivered_requests.filter(
+#                 Q(hospital_name_snapshot__icontains=query) |
+#                 Q(hospital_email_snapshot__icontains=query)
+#             )
+
+#         hospitals = delivered_requests.values(
+#             'hospital__id',  # include the ID for URL
+#             'hospital_name_snapshot',
+#             'hospital_email_snapshot',
+#             'hospital_contact_snapshot',
+#             'hospital_address_snapshot',
+#         ).distinct()
+
+#         return render(request, 'admin/hospital_delivery_summary.html', {
+#             'hospitals': hospitals,
+#             'query': query
+#         })
+
+# # Detail History for One Hospital
+# class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
+#     def get(self, request, hospital_id):
+#         hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
+#         deliveries = HospitalBloodRequest.objects.filter(hospital=hospital, status='delivered').order_by('-accepted_at')
+
+#         return render(request, 'admin/hospital_delivery_detail.html', {
+#             'hospital': hospital,
+#             'deliveries': deliveries
+#         })
+
 class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
     def get(self, request):
         query = request.GET.get('q', '')
@@ -1339,7 +1377,7 @@ class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
             )
 
         hospitals = delivered_requests.values(
-            'hospital__id',  # include the ID for URL
+             # include the ID for URL
             'hospital_name_snapshot',
             'hospital_email_snapshot',
             'hospital_contact_snapshot',
@@ -1350,15 +1388,15 @@ class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
             'hospitals': hospitals,
             'query': query
         })
-
-# Detail History for One Hospital
 class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
-    def get(self, request, hospital_id):
-        hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
-        deliveries = HospitalBloodRequest.objects.filter(hospital=hospital, status='delivered').order_by('-accepted_at')
+    def get(self, request, hospital_email):
+        # Filter directly by hospital ID in the FK, even if hospital is deleted
+        deliveries = HospitalBloodRequest.objects.filter(
+            hospital_email_snapshot=hospital_email,
+            status='delivered'
+        ).order_by('-delivered_at')
 
         return render(request, 'admin/hospital_delivery_detail.html', {
-            'hospital': hospital,
             'deliveries': deliveries
         })
 
