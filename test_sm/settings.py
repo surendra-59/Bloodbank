@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'blog',
+    'channels',
     # 'cloudinary',
     # 'cloudinary_storage',
     # 'storages',
@@ -118,6 +119,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'test_sm.wsgi.application'
+
+ASGI_APPLICATION = 'test_sm.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
 # Database

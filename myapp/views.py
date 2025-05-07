@@ -947,6 +947,13 @@ def admin_accept_request(request, request_id):
             blood_request.status = 'processing'
             blood_request.save()
 
+            # ✅ Send WebSocket notification to hospital
+            hospital_user = blood_request.hospital  # assuming 'hospital' is a ForeignKey to CustomUser
+            send_notification(
+                hospital_user,
+                f"Your blood request for {blood_request.blood_group} has been accepted. {approved_units} units approved."
+            )
+
             messages.success(request, "Request accepted and moved to processing. Inventory updated.")
         except ValueError:
             messages.error(request, "Invalid unit value.")
@@ -963,6 +970,13 @@ def admin_reject_request(request, request_id):
     blood_request.status = 'rejected'
     blood_request.rejected_at = timezone.now()
     blood_request.save()
+
+    # ✅ Send WebSocket notification to hospital
+    hospital_user = blood_request.hospital  # assuming 'hospital' is a ForeignKey to CustomUser
+    send_notification(
+        hospital_user,
+        f"Your blood request for {blood_request.blood_group} has been accepted. {approved_units} units approved."
+    )
 
     messages.info(request, "Request rejected.")
     return redirect('admin_manage_hospital_requests')
@@ -1347,6 +1361,22 @@ class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
             'hospital': hospital,
             'deliveries': deliveries
         })
+
+
+# Notification
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def send_notification(receiver, message):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"notifications_{receiver.id}",
+        {
+            'type': 'send_notification',
+            'message': message
+        }
+    )
+
 
 
 
