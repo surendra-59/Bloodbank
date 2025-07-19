@@ -4,26 +4,6 @@ import os
 import dj_database_url
 
 
-# import cloudinary
-# import cloudinary.uploader
-# import cloudinary.api
-
-# cloudinary.config(
-#     cloud_name='dcrbyi2ka',
-#     api_key='358974542787751',
-#     api_secret='lM2PKTKB9cGvbpvE7yxKccvqjvs'
-# )
-
-# CLOUDINARY_STORAGE = { 
-#     'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
-#     'API_KEY': os.environ['CLOUDINARY_API_KEY'],
-#     'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
-# }
-
-
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,7 +16,7 @@ SECRET_KEY = 'django-insecure-nj-n#eu$tb8&p(fxs=%z^_&7jr1093hbat*39f4v-oo%5p7l2^
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = [ ]
+ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = 'login'  # Replace 'login_page' with the name of your login view
 
@@ -72,6 +52,7 @@ LOGIN_URL = 'login'  # Replace 'login_page' with the name of your login view
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,10 +61,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'blog',
-    'channels',
-    # 'cloudinary',
-    # 'cloudinary_storage',
-    # 'storages',
 
 ]
 
@@ -95,6 +72,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
 ]
 
 AUTH_USER_MODEL = 'myapp.CustomUser'
@@ -113,6 +92,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.hospital_notifications',
+
             ],
         },
     },
@@ -120,21 +101,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'test_sm.wsgi.application'
 
-ASGI_APPLICATION = 'test_sm.asgi.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
 
-# postgresql://blood_bank_i1nt_user:uEzVQsakPixYKlAMmRNgNn5rNlozSTh3@dpg-d008buqli9vc739kukfg-a.virginia-postgres.render.com/blood_bank_i1nt
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -145,17 +118,7 @@ DATABASES = {
         'PORT': '3306',
     }
 }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'bloodbank',
-#         'USER': 'postgres',
-#         'PASSWORD': '',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
 
-#     }
-# }
 
 # DATABASES = {
 #     'default': {

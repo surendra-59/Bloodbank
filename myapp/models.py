@@ -243,14 +243,16 @@ class PasswordReset(models.Model):
         return f"Password reset for {self.user.email} at {self.created_when}"
 
 
-class Notification(models.Model):
-    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+# models.py
+
+class HospitalNotification(models.Model):
+    hospital = models.ForeignKey(CustomUser, on_delete=models.CASCADE, limit_choices_to={'user_type': '2'})
+    title = models.CharField(max_length=200)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ['-created_at']
-    
     def __str__(self):
-        return f"To {self.recipient.email}: {self.message[:30]}"
+        return f"{self.hospital.organization_name} - {self.title}"
+
+

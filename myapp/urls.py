@@ -94,12 +94,9 @@ urlpatterns = [
     path('delivered/hospitals/', views.HospitalDeliverySummaryView.as_view(), name='hospital_delivery_summary'),
     path('delivered/hospital/<str:hospital_email>/', views.HospitalDeliveryDetailView.as_view(), name='hospital_delivery_detail'),
 
+
+    path('notification/read-ajax/<int:notification_id>/', views.mark_notification_read_ajax, name='mark_notification_read_ajax'),
+    path('notification/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+
  ]
-
-from django.urls import path
-from .consumers import NotificationConsumer
-
-websocket_urlpatterns = [
-    path('ws/notifications/', NotificationConsumer.as_asgi()),
-]
 

@@ -163,7 +163,8 @@ def admin_dashboard(request):
 @login_required
 @user_passes_test(is_hospital)
 def hospital_dashboard(request):
-    return render(request, "hospital/hospital_dashboard.html")
+    notifications = HospitalNotification.objects.filter(hospital=request.user).order_by('-created_at')
+    return render(request, "hospital/hospital_dashboard.html", {'notifications': notifications})
 
 @login_required
 @user_passes_test(is_donor)
@@ -946,12 +947,10 @@ def admin_accept_request(request, request_id):
             blood_request.accepted_at = timezone.now()
             blood_request.status = 'processing'
             blood_request.save()
-
-            # ✅ Send WebSocket notification to hospital
-            hospital_user = blood_request.hospital  # assuming 'hospital' is a ForeignKey to CustomUser
-            send_notification(
-                hospital_user,
-                f"Your blood request for {blood_request.blood_group} has been accepted. {approved_units} units approved."
+            HospitalNotification.objects.create(
+                hospital=blood_request.hospital,
+                title="Blood Request Accepted",
+                message=f"Your request for {blood_request.units_requested} units of {blood_request.blood_group} has been accepted. {approved_units} units approved."
             )
 
             messages.success(request, "Request accepted and moved to processing. Inventory updated.")
@@ -970,12 +969,10 @@ def admin_reject_request(request, request_id):
     blood_request.status = 'rejected'
     blood_request.rejected_at = timezone.now()
     blood_request.save()
-
-    # ✅ Send WebSocket notification to hospital
-    hospital_user = blood_request.hospital  # assuming 'hospital' is a ForeignKey to CustomUser
-    send_notification(
-        hospital_user,
-        f"Your blood request for {blood_request.blood_group} has been accepted. {approved_units} units approved."
+    HospitalNotification.objects.create(
+        hospital=blood_request.hospital,
+        title="Blood Request Rejected",
+        message=f"Your request for {blood_request.units_requested} units of {blood_request.blood_group} has been rejected."
     )
 
     messages.info(request, "Request rejected.")
@@ -1001,6 +998,12 @@ def admin_mark_delivered(request, request_id):
         blood_request.delivered_at = timezone.now()
         blood_request.delivered_by = delivered_by
         blood_request.save()
+
+        HospitalNotification.objects.create(
+            hospital=blood_request.hospital,
+            title="Blood Request Delivered",
+            message=f"Your request for {blood_request.units_approved} units of {blood_request.blood_group} has been delivered by {delivered_by}."
+        )
 
         messages.success(request, "Request marked as delivered.")
     else:
@@ -1032,6 +1035,12 @@ def admin_mark_failed(request, request_id):
         blood_request.status = 'failed'
         blood_request.failed_at = timezone.now()
         blood_request.save()
+
+        HospitalNotification.objects.create(
+            hospital=blood_request.hospital,
+            title="Blood Request Failed",
+            message=f"Your blood request for {blood_request.units_approved} units of {blood_request.blood_group} failed. Units have been returned to inventory."
+        )
 
         messages.warning(request, "Request marked as failed. Blood units have been returned to inventory.")
     else:
@@ -1188,7 +1197,7 @@ def ForgetPassword(request):
                 <div class="container">
                     <h2>🔐 Password Reset Request</h2>
                     
-                    <p>Hello user,</p>
+                    <p>Hello ,</p>
  
                     <p>Please use the button below to reset your password:</p>
 
@@ -1401,19 +1410,46 @@ class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
         })
 
 
-# Notification
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+# def hospital_notifications(request):
+#     if request.user.is_authenticated and request.user.user_type == '2':
+#         notifications = HospitalNotification.objects.filter(hospital=request.user).order_by('-created_at')[:10]
+#         unread_notifications = notifications.filter(is_read=False)
+#         return {
+#             'notifications': notifications,
+#             'unread_notifications': unread_notifications,
+#         }
+#     return {}
 
-def send_notification(receiver, message):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"notifications_{receiver.id}",
-        {
-            'type': 'send_notification',
-            'message': message
-        }
-    )
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required
+def mark_notification_read_ajax(request, notification_id):
+    if request.user.user_type != '2':
+        return JsonResponse({'success': False}, status=403)
+
+    try:
+        notif = HospitalNotification.objects.get(id=notification_id, hospital=request.user)
+        notif.is_read = True
+        notif.save()
+        return JsonResponse({'success': True})
+    except HospitalNotification.DoesNotExist:
+        return JsonResponse({'success': False}, status=404)
+
+@require_POST
+@login_required
+def mark_all_notifications_read(request):
+    if request.user.user_type != "2":
+        return JsonResponse({'success': False}, status=403)
+
+    HospitalNotification.objects.filter(hospital=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({'success': True})
+
+
+
+
+
 
 
 
