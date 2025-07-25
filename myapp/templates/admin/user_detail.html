@@ -25,7 +25,10 @@
                             <li class="list-group-item">
                                 <strong>Profile Picture:</strong>
                                 {% if user.profile_pic %}
-                                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-thumbnail" style="width: 150px;">
+                                    <a href="{{ user.profile_pic.url }}" target="_blank">
+
+                                        <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-thumbnail" style="width: 150px;">
+                                    </a>
                                 {% else %}
                                     <p>No profile picture uploaded</p>
                                 {% endif %}
@@ -54,7 +57,9 @@
                             <li class="list-group-item">
                                 <strong>Profile Picture:</strong>
                                 {% if user.profile_pic %}
-                                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-thumbnail" style="width: 150px;">
+                                    <a href="{{ user.profile_pic.url }}" target="_blank">
+                                        <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="img-thumbnail" style="width: 150px;">
+                                    </a>
                                 {% else %}
                                     <p>No profile picture uploaded</p>
                                 {% endif %}
@@ -81,7 +86,9 @@
                             <li class="list-group-item">
                                 <strong>Identity:</strong>
                                 {% if user.identity %}
-                                    <img src="{{ user.identity.url }}" alt="Identity Image" class="img-thumbnail" style="width: 150px;">
+                                    <a href="{{ user.identity.url }}" target="_blank">
+                                        <img src="{{ user.identity.url }}" alt="Identity Image" class="img-thumbnail" style="width: 150px;">
+                                    </a>
                                 {% else %}
                                     <p>No identity image uploaded</p>
                                 {% endif %}
@@ -101,7 +108,9 @@
                             <li class="list-group-item">
                                 <strong>Identity:</strong>
                                 {% if user.identity %}
-                                    <img src="{{ user.identity.url }}" alt="Identity Image" class="img-thumbnail" style="width: 150px;">
+                                    <a href="{{ user.identity.url }}" target="_blank">
+                                        <img src="{{ user.identity.url }}" alt="Identity Image" class="img-thumbnail" style="width: 150px;">
+                                    </a>
                                 {% else %}
                                     <p>No identity image uploaded</p>
                                 {% endif %}

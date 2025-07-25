@@ -476,11 +476,54 @@ def request_blood(request):
             age__lte=50  # Age less than or equal to 50
         )
 
-        # Send notifications to each eligible donor
+        from_email = settings.EMAIL_HOST_USER
+
         for donor in eligible_donors:
-            # Assuming you have a notification system in place (e.g., Firebase)
-            # Example: send_notification(donor.fcm_token, "New Blood Request", f"A new blood request for {blood_group} blood is available.")
-            print(f"Notification sent to {donor.email} for blood group {blood_group}")
+            subject = f"Urgent Request: {blood_group} Blood Needed"
+            to_email = [donor.email]
+
+            html_content = f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+                    <h2 style="color: #d9534f; text-align: center;">🩸 Urgent Blood Needed</h2>
+                    <p>Dear <strong>{donor.first_name}</strong>,</p>
+
+                    <p>We are reaching out to inform you that there is an urgent need for <strong>{blood_group}</strong> blood.</p>
+
+                    <table style="width: 100%; margin: 15px 0;">
+                        <tr>
+                            <td style="padding: 8px;"><strong>📍 Location:</strong></td>
+                            <td style="padding: 8px;">{location}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;"><strong>📝 Requested By:</strong></td>
+                            <td style="padding: 8px;">{request.user.get_full_name()} ({request.user.email})</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;"><strong>📞 Contact Number:</strong></td>
+                            <td style="padding: 8px;">{request.user.contact_number}</td>
+                        </tr>
+                    </table>
+
+                    <p>If you are in good health and eligible to donate, we humbly request you to come forward. Your donation could help save a life.</p>
+
+                    <p style="margin-top: 20px;">Thank you for being a registered donor and for your continued support.</p>
+
+                    <p>Warm regards,<br>
+                    <strong>Blood Bank Team</strong></p>
+
+                    <hr style="margin-top: 30px;">
+                    <p style="font-size: 12px; color: #999;">This is an automated email. Please do not reply directly to this message.</p>
+                </div>
+            """
+
+            try:
+                email = EmailMessage(subject, html_content, from_email, to_email)
+                email.content_subtype = "html"  # Send as HTML
+                email.send()
+                print(f"Email sent to {donor.email}")
+            except Exception as e:
+                print(f"Failed to send email to {donor.email}: {e}")
+
 
         messages.success(request, "Blood request created successfully and sent to eligible donors.")
         return redirect("admin_dashboard")
