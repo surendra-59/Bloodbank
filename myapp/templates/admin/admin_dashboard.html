@@ -30,7 +30,7 @@
         <!-- Manage Blood Requests -->
         <div class="col-md-6 col-lg-4 position-relative">
             <a href="{% url 'admin_blood_requests' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold position-relative">
-                <i class="fas fa-tint me-2"></i> Manage Requests
+                <i class="fas fa-tint me-2"></i> Manage Response
 
                 {% if blood_pending_count > 0 or blood_processing_count > 0 %}
                 <div class="position-absolute top-0 end-0 me-2 mt-1 d-flex flex-column align-items-end">
@@ -71,12 +71,6 @@
             </a>
         </div>
 
-<!--             <div class="col-md-6 col-lg-4">
-                <a href="{% url 'admin_manage_hospital_requests' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold">
-                    <i class="fas fa-tint me-2"></i> Manage Hospital Requests
-                </a>
-            </div> -->
-
             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'request_blood' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold">
                     <i class="fas fa-tint me-2"></i> Request Blood
@@ -93,11 +87,7 @@
                     <i class="fas fa-tint me-2"></i> Hospitals History
                 </a>
             </div>
-<!--             <div class="col-md-6 col-lg-4">
-                <a href="{% url 'blood_inventory' %}" class="btn btn-outline-danger w-100 py-3 rounded-3 shadow-sm fw-semibold">
-                    <i class="fas fa-hand-holding-medical me-2"></i> Blood Inventory
-                </a>
-            </div> -->
+
 
             <div class="col-md-6 col-lg-4 position-relative">
                 <a href="{% url 'blood_inventory' %}" class="btn btn-outline-danger w-100 py-3 rounded-3 shadow-sm fw-semibold position-relative">
@@ -181,7 +171,7 @@
 
     <div class="col-md-6">
         <div class="card p-3 rounded-4 shadow-sm">
-            <h6 class="text-center">Age & Gender Distribution</h6>
+            <h6 class="text-center">Age Distribution</h6>
             <canvas id="ageChart"></canvas>
         </div>
     </div>

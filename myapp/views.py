@@ -80,7 +80,7 @@ def login_page(request):
             
             if user is not None:
                 if user.user_type == "2" and not user.is_approved:
-                    messages.error(request, "Your account is pending approval by the admin.")
+                    messages.error(request, "Your account is currently under review. You will be notified via email once it is approved. We appreciate your patience—please stay with us.")
                 else:
                     login(request, user)
                     return redirect("home")  # Redirect after login
@@ -107,7 +107,7 @@ def register_page(request):
 
             if user.user_type == "2":  # If hospital staff
                 user.is_approved = False  # Require admin approval
-                messages.info(request, "Your registration is pending approval by the admin.")
+                messages.info(request, "Registration successful! Please wait for admin approval. You’ll receive an email once your account is approved.")
                 print("User Type:", user.user_type)
                 print("Is Approved:", user.is_approved)
 
@@ -204,14 +204,6 @@ def hospital_dashboard(request):
 def donor_dashboard(request):
     return render(request, "donor/donor_dashboard.html")
 
-# @login_required
-# @user_passes_test(is_admin)
-# def approve_hospital(request, hospital_id):
-#     hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
-#     hospital.is_approved = True
-#     hospital.save()
-#     messages.success(request, "Hospital approved successfully.")
-#     return redirect("admin_dashboard")
 
 @login_required
 @user_passes_test(is_admin)
@@ -222,7 +214,7 @@ def approve_hospital(request, hospital_id):
 
     # ✅ Send email notification
     send_mail(
-        subject="Hospital Account Approved",
+        subject="Account Approved",
         message=f"Dear {hospital.organization_name or 'Hospital'},\n\n"
                 f"Your account has been approved and activated by the Blood Bank admin.\n"
                 f"You can now log in and start managing blood requests and updates.\n\n"
@@ -232,7 +224,7 @@ def approve_hospital(request, hospital_id):
         fail_silently=True,
     )
 
-    messages.success(request, "Hospital approved successfully.")
+    messages.success(request, "Account approved successfully.")
     return redirect("admin_dashboard")
 
 
@@ -260,26 +252,37 @@ class UserListView(LoginRequiredMixin, ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        query = self.request.GET.get('q', '')  # Get search input
-        # Separate filters for hospital and donor
-        hospitals = CustomUser.objects.filter(user_type=2, is_approved=True)
-        donors = CustomUser.objects.filter(user_type=3)
+        query = self.request.GET.get('q', '')
 
-        # Combine both querysets
-        users = hospitals.union(donors)
+        # Define base filters
+        hospital_filter = Q(user_type=2, is_approved=True)
+        donor_filter = Q(user_type=3)
 
+        # If search query is present
         if query:
-            users = users.filter(
+            search_filter = (
                 Q(first_name__icontains=query) |
                 Q(last_name__icontains=query) |
-                Q(email__icontains=query)
+                Q(email__icontains=query) |
+                Q(contact_number__icontains=query)
             )
+            hospitals = CustomUser.objects.filter(hospital_filter & search_filter)
+            donors = CustomUser.objects.filter(donor_filter & search_filter)
+        else:
+            hospitals = CustomUser.objects.filter(hospital_filter)
+            donors = CustomUser.objects.filter(donor_filter)
+
+        # Combine both querysets using Python, not ORM
+        users = list(hospitals) + list(donors)
+
+        # Optional: Sort users (by date joined, or any field you prefer)
+        users = sorted(users, key=lambda user: user.date_joined, reverse=True)
 
         return users
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')  # Pass query back to template
+        context['query'] = self.request.GET.get('q', '')
         return context
 
 class UserDetailView(LoginRequiredMixin, DetailView):
@@ -1022,6 +1025,9 @@ def admin_accept_request(request, request_id):
             if approved_units <= 0:
                 messages.error(request, "Approved units must be greater than 0.")
                 return redirect('admin_manage_hospital_requests')
+            if approved_units > blood_request.units_requested:
+                messages.error(request, "Approved units must be less than or equal to requested unit.")
+                return redirect('admin_manage_hospital_requests')
 
             # Check inventory before accepting the request
             inventory = BloodInventory.objects.filter(
@@ -1485,44 +1491,6 @@ def donor_history(request, donor_id):
 
 
 
-# class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
-#     def get(self, request):
-#         query = request.GET.get('q', '')
-
-#         # Get delivered requests
-#         delivered_requests = HospitalBloodRequest.objects.filter(status='delivered')
-
-#         # Filter by query (on snapshot fields, since hospital may be deleted)
-#         if query:
-#             delivered_requests = delivered_requests.filter(
-#                 Q(hospital_name_snapshot__icontains=query) |
-#                 Q(hospital_email_snapshot__icontains=query)
-#             )
-
-#         hospitals = delivered_requests.values(
-#             'hospital__id',  # include the ID for URL
-#             'hospital_name_snapshot',
-#             'hospital_email_snapshot',
-#             'hospital_contact_snapshot',
-#             'hospital_address_snapshot',
-#         ).distinct()
-
-#         return render(request, 'admin/hospital_delivery_summary.html', {
-#             'hospitals': hospitals,
-#             'query': query
-#         })
-
-# # Detail History for One Hospital
-# class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
-#     def get(self, request, hospital_id):
-#         hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
-#         deliveries = HospitalBloodRequest.objects.filter(hospital=hospital, status='delivered').order_by('-accepted_at')
-
-#         return render(request, 'admin/hospital_delivery_detail.html', {
-#             'hospital': hospital,
-#             'deliveries': deliveries
-#         })
-
 class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
     def get(self, request):
         query = request.GET.get('q', '')
@@ -1534,7 +1502,8 @@ class HospitalDeliverySummaryView(LoginRequiredMixin, ListView):
         if query:
             delivered_requests = delivered_requests.filter(
                 Q(hospital_name_snapshot__icontains=query) |
-                Q(hospital_email_snapshot__icontains=query)
+                Q(hospital_email_snapshot__icontains=query) |
+                Q(hospital_contact_snapshot__icontains=query)
             )
 
         hospitals = delivered_requests.values(
