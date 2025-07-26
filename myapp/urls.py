@@ -97,6 +97,7 @@ urlpatterns = [
 
     path('notification/read-ajax/<int:notification_id>/', views.mark_notification_read_ajax, name='mark_notification_read_ajax'),
     path('notification/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    path('notification/clear-all/', views.clear_all_notifications, name='clear_all_notifications'),
 
 
     path('dashboard/user-role-data/', views.user_role_chart_data, name='user_role_chart_data'),

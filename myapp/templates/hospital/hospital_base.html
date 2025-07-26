@@ -227,19 +227,22 @@
                       </a>
                       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="max-height: 300px; overflow-y: auto;">
                         {% if notifications %}
-                          {% for notif in notifications %}
+                           <li>
+                             <button id="mark-all-read-btn" class="dropdown-item text-primary text-center">Mark all as read</button>
                             <li>
+                            <li>
+                              <button id="clear-all-btn" class="dropdown-item text-danger text-center">Clear all notifications</button>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                          {% for notif in notifications %}
                               <a href="#" class="dropdown-item notification-item notification-card {% if not notif.is_read %}notification-unread{% else %}notification-read{% endif %}" data-id="{{ notif.id }}">
                                 <div class="fw-semibold">{{ notif.title }}</div>
                                 <div><small class="text-muted">{{ notif.created_at|naturaltime }}</small></div>
                               </a>
                             </li>
                           {% endfor %}
-                          <li><hr class="dropdown-divider"></li>
-                          <li>
-                            <button id="mark-all-read-btn" class="dropdown-item text-primary text-center">Mark all as read</button>
-                          </li>
                         {% else %}
+                          <li><hr class="dropdown-divider"></li>
                           <li><span class="dropdown-item text-muted">No notifications</span></li>
                         {% endif %}
                       </ul>
@@ -283,12 +286,6 @@
         {% endblock %}
     </div>
 
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-        <p>&copy; 2025 Blood Donation System. All Rights Reserved.</p>
-        <p>Unread count: {{ unread_notifications_count }}</p>
-
-    </footer>
-
 
 
     <!-- Toast -->
@@ -304,61 +301,105 @@
     <!-- Sound -->
     <audio id="notif-sound" src="{% static 'sounds/notify.mp3' %}" preload="auto"></audio>
 
-    <script>
-    function showToast(message) {
-      document.getElementById("toast-body").innerText = message;
-      new bootstrap.Toast(document.getElementById('liveToast')).show();
-    }
+<script>
+function showToast(message) {
+  document.getElementById("toast-body").innerText = message;
+  new bootstrap.Toast(document.getElementById('liveToast')).show();
+}
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // Mark one notification
-      document.querySelectorAll(".notification-item").forEach(item => {
-        item.addEventListener("click", function (e) {
-          e.preventDefault();
-          const id = this.dataset.id;
-          fetch(`/notification/read-ajax/${id}/`, {
-            method: "POST",
-            headers: {
-              "X-CSRFToken": "{{ csrf_token }}",
-              "Accept": "application/json"
-            }
-          }).then(res => res.json()).then(data => {
-            if (data.success) {
-              this.classList.remove("fw-bold");
-              const badge = document.getElementById("notification-badge");
-              if (badge) {
-                let count = parseInt(badge.textContent.trim());
-                if (count > 1) {
-                  badge.textContent = count - 1;
-                } else {
-                  badge.classList.add("d-none");
-                }
-              }
-              showToast("Notification marked as read");
-              document.getElementById("notif-sound").play();
-            }
-          });
-        });
-      });
+document.addEventListener("DOMContentLoaded", () => {
+  // Mark one notification as read
+  document.querySelectorAll(".notification-item").forEach(item => {
+    item.addEventListener("click", function (e) {
+      e.preventDefault();
+      const id = this.dataset.id;
+      fetch(`/notification/read-ajax/${id}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Accept": "application/json"
+        }
+      }).then(res => res.json()).then(data => {
+        if (data.success) {
+          this.classList.remove("fw-bold", "notification-unread");
+          this.classList.add("notification-read");
 
-      // Mark all as read
-      document.getElementById("mark-all-read-btn").addEventListener("click", function () {
-        fetch(`/notification/read-all/`, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Accept": "application/json"
+          const badge = document.getElementById("notification-badge");
+          if (badge) {
+            let count = parseInt(badge.textContent.trim());
+            if (count > 1) {
+              badge.textContent = count - 1;
+            } else {
+              badge.classList.add("d-none");
+            }
           }
-        }).then(res => res.json()).then(data => {
-          if (data.success) {
-            document.querySelectorAll(".notification-item").forEach(item => item.classList.remove("fw-bold"));
-            document.getElementById("notification-badge").classList.add("d-none");
-            showToast("All notifications marked as read");
-          }
-        });
+          showToast("Notification marked as read");
+          document.getElementById("notif-sound").play();
+        }
       });
     });
-    </script>
+  });
+
+  // Mark all as read
+  const markAllBtn = document.getElementById("mark-all-read-btn");
+  if (markAllBtn) {
+    markAllBtn.addEventListener("click", function () {
+      fetch(`/notification/read-all/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Accept": "application/json"
+        }
+      }).then(res => res.json()).then(data => {
+        if (data.success) {
+          document.querySelectorAll(".notification-item").forEach(item => {
+            item.classList.remove("fw-bold", "notification-unread");
+            item.classList.add("notification-read");
+          });
+          const badge = document.getElementById("notification-badge");
+          if (badge) {
+            badge.classList.add("d-none");
+          }
+          showToast("All notifications marked as read");
+          document.getElementById("notif-sound").play();
+        }
+      });
+    });
+  }
+
+  // Clear all notifications (delete)
+  const clearAllBtn = document.getElementById("clear-all-btn");
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener("click", function () {
+      fetch(`/notification/clear-all/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Accept": "application/json"
+        }
+      }).then(res => res.json()).then(data => {
+        if (data.success) {
+          // Remove all notifications from the DOM
+          document.querySelectorAll(".notification-item").forEach(item => item.parentElement.remove());
+          // Remove buttons themselves to avoid confusion
+          if (markAllBtn) markAllBtn.parentElement.remove();
+          clearAllBtn.parentElement.remove();
+
+          const badge = document.getElementById("notification-badge");
+          if (badge) {
+            badge.classList.add("d-none");
+          }
+          showToast("All notifications cleared");
+          document.getElementById("notif-sound").play();
+        } else {
+          showToast("Failed to clear notifications");
+        }
+      });
+    });
+  }
+});
+</script>
+
 
 
 

@@ -1558,6 +1558,15 @@ def mark_all_notifications_read(request):
     HospitalNotification.objects.filter(hospital=request.user, is_read=False).update(is_read=True)
     return JsonResponse({'success': True})
 
+@require_POST
+@login_required
+def clear_all_notifications(request):
+    if request.user.user_type != "2":
+        return JsonResponse({'success': False}, status=403)
+
+    HospitalNotification.objects.filter(hospital=request.user).delete()
+    return JsonResponse({'success': True})
+
 
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
