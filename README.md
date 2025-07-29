@@ -68,8 +68,8 @@ bash
 Copy
 Edit
 # 1. Clone the repo
-git clone https://github.com/Surendra-58/bloodbank2.git
-cd bloodbank2
+git clone https://github.com/Surendra-59/bloodbank.git
+cd bloodbank
 
 # 2. Setup virtual environment
 python -m venv venv
@@ -87,8 +87,14 @@ python manage.py createsuperuser
 
 # 6. Start the server
 python manage.py runserver
-📷 Screenshots (Optional)
-Add actual UI screenshots here if available:
+📷 Screenshots
+![Screenshot](images/p1.png)
+![Screenshot](images/p2.png)
+![Screenshot](images/p3.png)
+![Screenshot](images/p4.png)
+![Screenshot](images/p5.png)
+![Screenshot](images/p6.png)
+
 
 Admin Dashboard
 
