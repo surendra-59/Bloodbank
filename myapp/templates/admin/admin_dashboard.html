@@ -50,4 +50,329 @@
         </div>
     </div>
 </div>
+
+<hr class="my-5">
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card p-2 rounded-4 shadow-sm">
+            <h6 class="text-center">Users by Role</h6>
+            <div style="width: 210px; aspect-ratio: 1 / 1; margin: 0 auto;">
+            <canvas id="userRoleChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-2 rounded-4 shadow-sm">
+            <h6 class="text-center">Request Status Summary</h6>
+            <div style="width: 210px; aspect-ratio: 1 / 1; margin: 0 auto;">
+            <canvas id="requestStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-2 rounded-4 shadow-sm">
+            <h6 class="text-center">Gender Distribution</h6>
+            <div style="width: 210px; aspect-ratio: 1 / 1; margin: 0 auto;">
+            <canvas id="genderChart"></canvas></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-2 rounded-4 shadow-sm">
+        <h6 class="text-center">Donors by Blood Group</h6>
+        <div style="width: 210px; aspect-ratio: 1 / 1; margin: 0 auto;">
+        <canvas id="donorBloodGroupChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 rounded-4 shadow-sm">
+            <h6 class="text-center">Donation Trends</h6>
+            <canvas id="donationTrendsChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 rounded-4 shadow-sm">
+            <h6 class="text-center">Blood Inventory</h6>
+            <canvas id="bloodInventoryChart"></canvas>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card p-3 rounded-4 shadow-sm">
+            <h6 class="text-center">Top Five Donors</h6>
+            <canvas id="topDonorsChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 rounded-4 shadow-sm">
+            <h6 class="text-center">Age & Gender Distribution</h6>
+            <canvas id="ageChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. User Role Chart
+    fetch('/dashboard/user-role-data/')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('userRoleChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.counts,
+                        backgroundColor: ['#007bff', '#28a745', '#dc3545']
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'left', // 'top', 'left', 'right', 'bottom'
+                            labels: {
+                                color: '#333',
+                                font: {
+                                    size: 14
+                                },
+                                boxWidth: 20,
+                                padding: 20 // space between items and chart
+
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: -30 // pushes chart rightward
+                        }
+                    }
+                }
+
+            });
+        });
+
+    // 2. Blood Inventory Chart
+    fetch('/dashboard/inventory/')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('bloodInventoryChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Units Available',
+                        data: data.data,
+                        backgroundColor: '#ff6384'
+                    }]
+                },
+
+            });
+        });
+
+    // 3. Donation Trends Chart
+    fetch('/dashboard/donations-over-time/')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('donationTrendsChart'), {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Donations',
+                        data: data.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            ticks: {
+                                precision: 0 // This ensures only integer values on Y-axis
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+    // 4. Request Status Chart
+    fetch('/dashboard/request-status/')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('requestStatusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: ['#ffc107', '#17a2b8']
+                    }]
+                },
+                options: {
+                    cutout: '70%', 
+                    radius: '95%',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'left', // 'top', 'left', 'right', 'bottom'
+                            labels: {
+                                color: '#333',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: -40 // pushes chart rightward
+                        }
+                    }
+                }
+
+            });
+        });
+
+    // 5. Top Donors Chart
+    fetch('/dashboard/top-donors/')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('topDonorsChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Donations',
+                        data: data.data,
+                        backgroundColor: '#6f42c1'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            ticks: {
+                                precision: 0 // This ensures only integer values on Y-axis
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+    // 6. Age and Gender Charts
+    fetch('/dashboard/age-gender-distribution/')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('ageChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.age.labels,
+                    datasets: [{
+                        label: 'Donors by Age Group',
+                        data: data.age.data,
+                        backgroundColor: '#20c997'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            ticks: {
+                                precision: 0 // This ensures only integer values on Y-axis
+                            }
+                        }
+                    },
+                }
+            });
+
+            new Chart(document.getElementById('genderChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.gender.labels,
+                    datasets: [{
+                        data: data.gender.data,
+                        backgroundColor: ['#007bff', '#e83e8c', '#6c757d']
+                    }]
+                },
+                options: {
+                    radius: '95%',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'left', // 'top', 'left', 'right', 'bottom'
+                            labels: {
+                                color: '#333',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: -40 // pushes chart rightward
+                        }
+                    }
+                }
+
+            });
+        });
+});
+
+
+fetch('/dashboard/donor-blood-group/')
+    .then(res => res.json())
+    .then(data => {
+        new Chart(document.getElementById('donorBloodGroupChart'), {
+            type: 'doughnut', // or 'pie' or 'doughnut' for circular view
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Donors by Blood Group',
+                    data: data.data,
+                    backgroundColor: [
+                        '#dc3545', '#fd7e14', '#ffc107', '#28a745',
+                        '#17a2b8', '#6f42c1', '#e83e8c', '#20c997'
+                    ]
+                }]
+            },
+            options: {
+                radius: '93%',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'left', // 'top', 'left', 'right', 'bottom'
+                        labels: {
+                            color: '#333',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: -30 // pushes chart rightward
+                    }
+                }
+            }
+        });
+    });
+
+
+</script>
+
+
 {% endblock %}

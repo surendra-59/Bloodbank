@@ -98,5 +98,13 @@ urlpatterns = [
     path('notification/read-ajax/<int:notification_id>/', views.mark_notification_read_ajax, name='mark_notification_read_ajax'),
     path('notification/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 
+
+    path('dashboard/user-role-data/', views.user_role_chart_data, name='user_role_chart_data'),
+    path('dashboard/inventory/', views.blood_inventory_chart_data, name='blood_inventory_chart_data'),
+    path('dashboard/donations-over-time/', views.donation_trends_chart_data, name='donation_trends_chart_data'),
+    path('dashboard/request-status/', views.request_status_chart_data, name='request_status_chart_data'),
+    path('dashboard/top-donors/', views.top_donors_chart_data, name='top_donors_chart_data'),
+    path('dashboard/age-gender-distribution/', views.age_gender_distribution_chart_data, name='age_gender_distribution_chart_data'),
+    path('dashboard/donor-blood-group/', views.donor_blood_group_chart_data, name='donor_blood_group_chart_data'),
  ]
 

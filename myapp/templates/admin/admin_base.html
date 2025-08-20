@@ -14,7 +14,7 @@
 
     <!-- Default or shared styles can go here -->
     {% endblock %}
-
+{% block extra_css %}
 <style>
 /* Sleek black and blue gradient navbar */
 .custom-navbar {
@@ -46,8 +46,10 @@
     background-color: #fff;
     border-radius: 6px;
 }
+
 </style>
 
+{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg custom-navbar">
@@ -274,19 +276,9 @@
     </script>
 
     </script>
-
-    <script>
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
-
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        alert(data.message); // Replace with your notification display logic
-    };
-
-    socket.onclose = function(e) {
-        console.error('WebSocket closed unexpectedly');
-    };
-    </script>
+    {% block extra_js %}
+    <!-- child templates can add scripts here -->
+    {% endblock %}
 
 </body>
 </html>

@@ -1410,15 +1410,6 @@ class HospitalDeliveryDetailView(LoginRequiredMixin, ListView):
         })
 
 
-# def hospital_notifications(request):
-#     if request.user.is_authenticated and request.user.user_type == '2':
-#         notifications = HospitalNotification.objects.filter(hospital=request.user).order_by('-created_at')[:10]
-#         unread_notifications = notifications.filter(is_read=False)
-#         return {
-#             'notifications': notifications,
-#             'unread_notifications': unread_notifications,
-#         }
-#     return {}
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -1446,6 +1437,170 @@ def mark_all_notifications_read(request):
     HospitalNotification.objects.filter(hospital=request.user, is_read=False).update(is_read=True)
     return JsonResponse({'success': True})
 
+
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def user_role_chart_data(request):
+    data = {
+        'labels': ['Admins', 'Hospitals', 'Donors'],
+        'counts': [
+            User.objects.filter(user_type="1").count(),
+            User.objects.filter(user_type="2").count(),
+            User.objects.filter(user_type="3").count(),
+        ]
+    }
+    return JsonResponse(data)
+
+
+from django.http import JsonResponse
+from .models import BloodInventory
+from django.db.models import Sum
+
+def blood_inventory_chart_data(request):
+    blood_groups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+    data = []
+
+    for group in blood_groups:
+        total_units = BloodInventory.objects.filter(blood_group=group).aggregate(total=Sum('available_units'))['total'] or 0
+        data.append(total_units)
+
+    response = {
+        'labels': blood_groups,
+        'data': data
+    }
+    return JsonResponse(response)
+
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+from .models import BloodDonationHistory
+
+
+
+from collections import defaultdict
+from django.utils.timezone import localtime
+
+def donation_trends_chart_data(request):
+    donations = BloodDonationHistory.objects.all()
+    monthly_count = defaultdict(int)
+
+    for donation in donations:
+        local_date = localtime(donation.donation_date)  # Safely handle timezone
+        month_key = local_date.strftime('%B %Y')  # Example: July 2025
+        monthly_count[month_key] += 1
+
+    labels = sorted(monthly_count.keys(), key=lambda x: datetime.strptime(x, '%B %Y'))
+    data = [monthly_count[label] for label in labels]
+
+    response = {
+        'labels': labels,
+        'data': data
+    }
+
+    return JsonResponse(response)
+
+
+from .models import BloodRequest
+
+def request_status_chart_data(request):
+    status_labels = ['Pending', 'Processing']
+    status_map = ['pending', 'processing']
+    data = []
+
+    for status in status_map:
+        count = BloodRequest.objects.filter(status=status).count()
+        data.append(count)
+
+    response = {
+        'labels': status_labels,
+        'data': data
+    }
+    return JsonResponse(response)
+
+def top_donors_chart_data(request):
+    top_donors = (
+        CustomUser.objects.filter(user_type="3")
+        .order_by('-donation_count')[:5]
+        .values('first_name', 'last_name', 'donation_count')
+    )
+
+    labels = []
+    data = []
+
+    for donor in top_donors:
+        full_name = f"{donor['first_name']} {donor['last_name']}".strip()
+        labels.append(full_name or "Anonymous")
+        data.append(donor['donation_count'])
+
+    response = {
+        'labels': labels,
+        'data': data
+    }
+
+    return JsonResponse(response)
+
+def age_gender_distribution_chart_data(request):
+    # Gender distribution
+    gender_labels = ['Male', 'Female', 'Other']
+    gender_codes = ['M', 'F', 'O']
+    gender_data = [
+        CustomUser.objects.filter(user_type="3", gender=code).count()
+        for code in gender_codes
+    ]
+
+    # Age group distribution
+    age_groups = ['18–25', '26–35', '36–45', '46+']
+    age_data = [
+        CustomUser.objects.filter(user_type="3", age__gte=18, age__lte=25).count(),
+        CustomUser.objects.filter(user_type="3", age__gte=26, age__lte=35).count(),
+        CustomUser.objects.filter(user_type="3", age__gte=36, age__lte=45).count(),
+        CustomUser.objects.filter(user_type="3", age__gte=46).count(),
+    ]
+
+    response = {
+        'gender': {
+            'labels': gender_labels,
+            'data': gender_data
+        },
+        'age': {
+            'labels': age_groups,
+            'data': age_data
+        }
+    }
+
+    return JsonResponse(response)
+
+
+
+from django.http import JsonResponse
+from django.db.models import Count
+from myapp.models import CustomUser
+
+def donor_blood_group_chart_data(request):
+    # Only donors (user_type = "3")
+    blood_group_data = (
+        CustomUser.objects
+        .filter(user_type="3")
+        .values('blood_group')
+        .annotate(count=Count('id'))
+        .order_by('blood_group')
+    )
+
+    labels = []
+    data = []
+
+    for item in blood_group_data:
+        labels.append(item['blood_group'])
+        data.append(item['count'])
+
+    response = {
+        'labels': labels,
+        'data': data
+    }
+
+    return JsonResponse(response)
 
 
 
