@@ -7,8 +7,6 @@ from datetime import date
 from django.db.models import Q
 from django.core.validators import MinValueValidator
 
-from cloudinary.models import CloudinaryField
-
 from django.conf import settings
 
 

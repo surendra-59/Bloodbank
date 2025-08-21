@@ -1,7 +1,7 @@
 
 from pathlib import Path
 import os
-import dj_database_url
+from decouple import config  # from python-decouple
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -183,9 +183,11 @@ SESSION_SAVE_EVERY_REQUEST = True
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_PORT=465
 EMAIL_USE_SSL=True
-EMAIL_HOST_USER="everestatnepal4ever@gmail.com"
-EMAIL_HOST_PASSWORD="tsjb ujcz ytsx mvio"
+# EMAIL_HOST_USER="everestatnepal4ever@gmail.com"
+# EMAIL_HOST_PASSWORD="tsjb ujcz ytsx mvio"
 
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")        # no default; must be set
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")# no default; must be set
 
 
 from django.contrib.messages import constants as messages

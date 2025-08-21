@@ -3,8 +3,6 @@ from django.db import models
 from django.utils import timezone
 from myapp.models import CustomUser
 
-from cloudinary.models import CloudinaryField
-
 # ---------------------------
 # Blog Post Model (Supports Reposts)
 # ---------------------------
