@@ -47,6 +47,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.core import signing
 from django.conf import settings
+from django.core.mail import send_mail
+
 
 from .models import CustomUser, PasswordReset  # Adjust this as per your actual app
 from django.core.signing import BadSignature, SignatureExpired
@@ -202,16 +204,36 @@ def hospital_dashboard(request):
 def donor_dashboard(request):
     return render(request, "donor/donor_dashboard.html")
 
+# @login_required
+# @user_passes_test(is_admin)
+# def approve_hospital(request, hospital_id):
+#     hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
+#     hospital.is_approved = True
+#     hospital.save()
+#     messages.success(request, "Hospital approved successfully.")
+#     return redirect("admin_dashboard")
+
 @login_required
 @user_passes_test(is_admin)
 def approve_hospital(request, hospital_id):
     hospital = get_object_or_404(CustomUser, id=hospital_id, user_type="2")
     hospital.is_approved = True
     hospital.save()
+
+    # ✅ Send email notification
+    send_mail(
+        subject="Hospital Account Approved",
+        message=f"Dear {hospital.organization_name or 'Hospital'},\n\n"
+                f"Your account has been approved and activated by the Blood Bank admin.\n"
+                f"You can now log in and start managing blood requests and updates.\n\n"
+                f"Thank you for joining us!\nBlood Bank",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[hospital.email],
+        fail_silently=True,
+    )
+
     messages.success(request, "Hospital approved successfully.")
     return redirect("admin_dashboard")
-
-
 
 
 
@@ -983,6 +1005,20 @@ def admin_accept_request(request, request_id):
                 title="Blood Request Accepted",
                 message=f"Your request for {blood_request.units_requested} units of {blood_request.blood_group} has been accepted. {approved_units} units approved."
             )
+            send_mail(
+                subject="Blood Request Accepted",
+                message=f"Dear {blood_request.hospital.organization_name or 'Hospital'},\n\n"
+                        f"Your blood request has been accepted.\n\n"
+                        f"Requested Units: {blood_request.units_requested}\n"
+                        f"Approved Units: {approved_units}\n"
+                        f"Blood Group: {blood_request.blood_group}\n"
+                        f"Request Status: Processing\n\n"
+                        f"Thank you,\nBlood Bank Admin Team",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[blood_request.hospital.email],
+                fail_silently=True,
+            )
+
 
             messages.success(request, "Request accepted and moved to processing. Inventory updated.")
         except ValueError:
@@ -1005,6 +1041,20 @@ def admin_reject_request(request, request_id):
         title="Blood Request Rejected",
         message=f"Your request for {blood_request.units_requested} units of {blood_request.blood_group} has been rejected."
     )
+
+    send_mail(
+        subject="Blood Request Rejected",
+        message=f"Dear {blood_request.hospital.organization_name or 'Hospital'},\n\n"
+                f"Your blood request has been rejected.\n\n"
+                f"Requested Units: {blood_request.units_requested}\n"
+                f"Blood Group: {blood_request.blood_group}\n"
+                f"Request Status: Rejected\n\n"
+                f"Thank you,\nBlood Bank Admin Team",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[blood_request.hospital.email],
+        fail_silently=True,
+    )
+
 
     messages.info(request, "Request rejected.")
     return redirect('admin_manage_hospital_requests')
@@ -1035,6 +1085,20 @@ def admin_mark_delivered(request, request_id):
             title="Blood Request Delivered",
             message=f"Your request for {blood_request.units_approved} units of {blood_request.blood_group} has been delivered by {delivered_by}."
         )
+        send_mail(
+            subject="Blood Request Delivered",
+            message=f"Dear {blood_request.hospital.organization_name or 'Hospital'},\n\n"
+                    f"Your blood request has been delivered.\n\n"
+                    f"Delivered Units: {blood_request.units_approved}\n"
+                    f"Blood Group: {blood_request.blood_group}\n"
+                    f"Delivered By: {delivered_by}\n"
+                    f"Request Status: Delivered\n\n"
+                    f"Thank you,\nBlood Bank Admin Team",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[blood_request.hospital.email],
+            fail_silently=True,
+        )
+
 
         messages.success(request, "Request marked as delivered.")
     else:
@@ -1072,6 +1136,20 @@ def admin_mark_failed(request, request_id):
             title="Blood Request Failed",
             message=f"Your blood request for {blood_request.units_approved} units of {blood_request.blood_group} failed. Units have been returned to inventory."
         )
+        send_mail(
+            subject="Blood Request Failed",
+            message=f"Dear {blood_request.hospital.organization_name or 'Hospital'},\n\n"
+                    f"Unfortunately, your blood request could not be fulfilled and has been marked as failed.\n\n"
+                    f"Approved Units: {blood_request.units_approved}\n"
+                    f"Blood Group: {blood_request.blood_group}\n"
+                    f"Request Status: Failed\n\n"
+                    f"The approved units have been returned to the inventory.\n\n"
+                    f"Thank you,\nBlood Bank Admin Team",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[blood_request.hospital.email],
+            fail_silently=True,
+        )
+
 
         messages.warning(request, "Request marked as failed. Blood units have been returned to inventory.")
     else:
