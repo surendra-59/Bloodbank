@@ -158,7 +158,38 @@ def home(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    return render(request, "admin/admin_dashboard.html")
+    # Get current admin
+    admin = request.user
+
+    # Get all blood inventory for the admin
+    blood_inventory = BloodInventory.objects.filter(admin=admin)
+
+    # Find blood groups with less than 5 units
+    low_blood_inventory = blood_inventory.filter(available_units__lt=5)
+    low_blood_groups = [item.blood_group for item in low_blood_inventory]
+
+    # Get count of pending hospital approvals
+    pending_hospital_count = CustomUser.objects.filter(user_type="2", is_approved=False).count()
+
+    blood_pending_count = BloodRequest.objects.filter(admin=admin, status='pending').count()
+    blood_processing_count = BloodRequest.objects.filter(admin=admin, status='processing').count()
+
+    hospital_pending_count = HospitalBloodRequest.objects.filter(status='pending').count()
+    hospital_processing_count = HospitalBloodRequest.objects.filter(status='processing').count()
+
+    context = {
+        "low_blood_groups": low_blood_groups,
+        "pending_hospital_count": pending_hospital_count,
+        "blood_pending_count": blood_pending_count,
+        "blood_processing_count": blood_processing_count,
+        "hospital_pending_count": hospital_pending_count,
+        "hospital_processing_count": hospital_processing_count,
+    }
+
+    return render(request, "admin/admin_dashboard.html", context)
+
+# def admin_dashboard(request):
+#     return render(request, "admin/admin_dashboard.html")
 
 @login_required
 @user_passes_test(is_hospital)

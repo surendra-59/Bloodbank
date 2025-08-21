@@ -183,8 +183,8 @@ SESSION_SAVE_EVERY_REQUEST = True
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_PORT=465
 EMAIL_USE_SSL=True
-# EMAIL_HOST_USER="everestatnepal4ever@gmail.com"
-# EMAIL_HOST_PASSWORD="tsjb ujcz ytsx mvio"
+# EMAIL_HOST_USER="everestatcc@gmail.com"
+# EMAIL_HOST_PASSWORD=" "
 
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")        # no default; must be set
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")# no default; must be set

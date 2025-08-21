@@ -9,21 +9,73 @@
         </p>
         
         <div class="row g-3 justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <a href="{% url 'pending_hospitals' %}" class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm fw-semibold">
-                    <i class="fas fa-hospital-user me-2"></i> Approve Hospital's account
+            <div class="col-md-6 col-lg-4 position-relative">
+                <a href="{% url 'pending_hospitals' %}" class="btn btn-outline-primary w-100 py-3 rounded-3 shadow-sm fw-semibold position-relative">
+                    <i class="fas fa-hospital-user me-2"></i> Approve Hospital's Account
+
+                    {% if pending_hospital_count > 0 %}
+                        <!-- Notification Badge -->
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ pending_hospital_count }}
+                        </span>
+                    {% endif %}
                 </a>
             </div>
-            <div class="col-md-6 col-lg-4">
+<!--             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'admin_blood_requests' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold">
                     <i class="fas fa-tint me-2"></i> Manage Requests
                 </a>
-            </div>
-            <div class="col-md-6 col-lg-4">
+            </div> -->
+
+        <!-- Manage Blood Requests -->
+        <div class="col-md-6 col-lg-4 position-relative">
+            <a href="{% url 'admin_blood_requests' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold position-relative">
+                <i class="fas fa-tint me-2"></i> Manage Requests
+
+                {% if blood_pending_count > 0 or blood_processing_count > 0 %}
+                <div class="position-absolute top-0 end-0 me-2 mt-1 d-flex flex-column align-items-end">
+                    {% if blood_pending_count > 0 %}
+                        <span class="badge rounded-pill bg-danger mb-1">
+                            P: {{ blood_pending_count }}
+                        </span>
+                    {% endif %}
+                    {% if blood_processing_count > 0 %}
+                        <span class="badge rounded-pill bg-warning text-dark">
+                            In: {{ blood_processing_count }}
+                        </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- Manage Hospital Requests -->
+        <div class="col-md-6 col-lg-4 position-relative">
+            <a href="{% url 'admin_manage_hospital_requests' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold position-relative">
+                <i class="fas fa-tint me-2"></i> Manage Hospital Requests
+
+                {% if hospital_pending_count > 0 or hospital_processing_count > 0 %}
+                <div class="position-absolute top-0 end-0 me-2 mt-1 d-flex flex-column align-items-end">
+                    {% if hospital_pending_count > 0 %}
+                        <span class="badge rounded-pill bg-danger mb-1">
+                            P: {{ hospital_pending_count }}
+                        </span>
+                    {% endif %}
+                    {% if hospital_processing_count > 0 %}
+                        <span class="badge rounded-pill bg-warning text-dark">
+                            In: {{ hospital_processing_count }}
+                        </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </a>
+        </div>
+
+<!--             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'admin_manage_hospital_requests' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold">
                     <i class="fas fa-tint me-2"></i> Manage Hospital Requests
                 </a>
-            </div>
+            </div> -->
 
             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'request_blood' %}" class="btn btn-outline-success w-100 py-3 rounded-3 shadow-sm fw-semibold">
@@ -41,10 +93,29 @@
                     <i class="fas fa-tint me-2"></i> Hospitals History
                 </a>
             </div>
-            <div class="col-md-6 col-lg-4">
+<!--             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'blood_inventory' %}" class="btn btn-outline-danger w-100 py-3 rounded-3 shadow-sm fw-semibold">
                     <i class="fas fa-hand-holding-medical me-2"></i> Blood Inventory
                 </a>
+            </div> -->
+
+            <div class="col-md-6 col-lg-4 position-relative">
+                <a href="{% url 'blood_inventory' %}" class="btn btn-outline-danger w-100 py-3 rounded-3 shadow-sm fw-semibold position-relative">
+                    <i class="fas fa-hand-holding-medical me-2"></i> Blood Inventory
+
+                    {% if low_blood_groups %}
+                        <!-- Show warning icon -->
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </span>
+                    {% endif %}
+                </a>
+
+                {% if low_blood_groups %}
+                    <div class="text-danger mt-2 small fw-bold">
+                        Low: {{ low_blood_groups|join:", " }}
+                    </div>
+                {% endif %}
             </div>
 
         </div>
